@@ -1,0 +1,29 @@
+# Caddyfile - Automatic HTTPS & Reverse Proxy
+# Configuration for Oracle Cloud VM deployment
+
+{
+    email admin@company.example.com
+}
+
+# Staging / Production Domain
+api.outreach-crm.internal {
+    # Reverse proxy backend API endpoints
+    handle /api/* {
+        reverse_proxy backend:8000
+    }
+
+    # Reverse proxy n8n automation engine
+    handle /n8n/* {
+        reverse_proxy n8n:5678
+    }
+
+    # Health check passthrough
+    handle /health {
+        reverse_proxy backend:8000
+    }
+
+    # Default fallback
+    handle {
+        respond "AI CRM Outreach Infrastructure Active" 200
+    }
+}

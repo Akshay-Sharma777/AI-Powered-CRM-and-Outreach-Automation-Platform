@@ -1,0 +1,78 @@
+{
+  "name": "Daily Lead Discovery Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 24
+            }
+          ]
+        }
+      },
+      "id": "node_schedule_01",
+      "name": "Daily Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "command": "python -m automation.scrapers.runner --source internshala"
+      },
+      "id": "node_exec_internshala",
+      "name": "Execute Internshala Scraper",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://backend:8000/api/v1/webhooks/scraper-ingest",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "method": "POST"
+      },
+      "id": "node_post_ingest",
+      "name": "Post to Ingest Webhook",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [720, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "scraper_ingest_credentials",
+          "name": "Scraper Ingest Secret"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Daily Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Execute Internshala Scraper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Internshala Scraper": {
+      "main": [
+        [
+          {
+            "node": "Post to Ingest Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AIErrorDiagnosisOutput",
+  "type": "object",
+  "required": [
+    "likely_root_cause",
+    "confidence",
+    "suggested_action",
+    "is_transient"
+  ],
+  "properties": {
+    "likely_root_cause": {
+      "type": "string",
+      "description": "Diagnosis of what failed based on stack trace, category, and payload"
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "Confidence score between 0.0 and 1.0"
+    },
+    "suggested_action": {
+      "type": "string",
+      "description": "Clear recommendation for remediation by human developer/operator"
+    },
+    "is_transient": {
+      "type": "boolean",
+      "description": "True if error is transient and safe to retry automatically"
+    }
+  },
+  "additionalProperties": false
+}

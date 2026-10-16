@@ -1,0 +1,64 @@
+{
+  "name": "Global Error Trap Workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "node_error_trigger",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://backend:8000/api/v1/guardrails/error-webhook",
+        "method": "POST",
+        "bodyParametersUi": {
+          "parameter": [
+            {
+              "name": "workflow",
+              "value": "={{ $json.workflow.name }}"
+            },
+            {
+              "name": "job_id",
+              "value": "={{ $json.execution.id }}"
+            },
+            {
+              "name": "failed_step",
+              "value": "={{ $json.execution.lastNodeExecuted }}"
+            },
+            {
+              "name": "category",
+              "value": "temporary_network"
+            },
+            {
+              "name": "redacted_message",
+              "value": "={{ $json.execution.error.message }}"
+            }
+          ]
+        }
+      },
+      "id": "node_post_error_center",
+      "name": "Post to Error Center",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [520, 300]
+    }
+  ],
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Post to Error Center",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

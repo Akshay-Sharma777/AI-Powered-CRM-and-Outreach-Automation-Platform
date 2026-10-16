@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AIDraftOutput",
+  "type": "object",
+  "required": [
+    "subject",
+    "body",
+    "personalization_summary",
+    "claims_used",
+    "missing_information_warnings",
+    "confidence_note"
+  ],
+  "properties": {
+    "subject": {
+      "type": "string",
+      "maxLength": 80,
+      "description": "Engaging, concise subject line with no clickbait or false promises"
+    },
+    "body": {
+      "type": "string",
+      "description": "Email body content strictly adhering to verified facts (80 to 200 words)"
+    },
+    "personalization_summary": {
+      "type": "string",
+      "description": "Explanation of why this message is relevant to the recipient"
+    },
+    "claims_used": {
+      "type": "array",
+      "description": "List of explicit factual claims made in the body, each mapped to its input fact_id",
+      "items": {
+        "type": "object",
+        "required": ["fact_id", "claim"],
+        "properties": {
+          "fact_id": {
+            "type": "string",
+            "description": "ID of the input fact from which this claim was derived"
+          },
+          "claim": {
+            "type": "string",
+            "description": "The exact factual assertion made in the draft"
+          }
+        }
+      }
+    },
+    "missing_information_warnings": {
+      "type": "array",
+      "description": "Explicit notices if critical info (e.g. salary, specific tech stack) was missing from the verified facts rather than hallucinated",
+      "items": {
+        "type": "string"
+      }
+    },
+    "confidence_note": {
+      "type": "string",
+      "description": "Model self-assessment of draft appropriateness and alignment with verified inputs"
+    }
+  },
+  "additionalProperties": false
+}

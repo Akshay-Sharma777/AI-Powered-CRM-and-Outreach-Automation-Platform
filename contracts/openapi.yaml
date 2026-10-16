@@ -1,0 +1,808 @@
+openapi: 3.0.3
+info:
+  title: AI-Powered CRM & Outreach Automation Platform API
+  description: >
+    Official API specification for the AI-Powered Lead Intelligence, CRM & Outreach Automation Platform.
+    This contract serves as the single source of truth across Frontend, Backend, and AI teams.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Local development server
+  - url: https://api.outreach-crm.internal/api/v1
+    description: Staging / Production server
+
+paths:
+  /health:
+    get:
+      summary: Service Health Check
+      description: Returns health status and version of backend service.
+      operationId: getHealth
+      responses:
+        '200':
+          description: Healthy status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /auth/login:
+    post:
+      summary: User Login
+      description: Authenticates user credentials and returns JWT access token.
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Successful authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          description: Account temporarily locked due to repeated failed logins.
+
+  /auth/me:
+    get:
+      summary: Current User Profile
+      security:
+        - BearerAuth: []
+      operationId: getCurrentUser
+      responses:
+        '200':
+          description: Current user information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /leads:
+    get:
+      summary: List Discovered Leads & Opportunities
+      security:
+        - BearerAuth: []
+      operationId: listLeads
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+            default: 25
+            maximum: 100
+        - name: source
+          in: query
+          schema:
+            type: string
+        - name: experience_min
+          in: query
+          schema:
+            type: integer
+        - name: experience_max
+          in: query
+          schema:
+            type: integer
+        - name: score_band
+          in: query
+          schema:
+            type: string
+            enum: [high, medium, low, suppressed]
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [new, needs_enrichment, verified, draft_ready, approved, sent, closed]
+        - name: assigned_to
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: sort_by
+          in: query
+          schema:
+            type: string
+            default: discovered_at
+        - name: sort_order
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+      responses:
+        '200':
+          description: Paginated leads list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLeadsResponse'
+
+  /leads/{id}:
+    get:
+      summary: Get Lead by ID
+      security:
+        - BearerAuth: []
+      operationId: getLeadById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Detailed lead record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeadDetailResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /leads/{id}/claim:
+    post:
+      summary: Claim / Assign Lead
+      security:
+        - BearerAuth: []
+      operationId: claimLead
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                  description: Optional user_id (only admins/leads can assign to others)
+      responses:
+        '200':
+          description: Successfully claimed/assigned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeadSummary'
+        '409':
+          description: Lead has already been claimed by another team member.
+
+  /leads/{id}/verify:
+    post:
+      summary: Trigger Email Verification
+      security:
+        - BearerAuth: []
+      operationId: verifyLeadContact
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Verification outcome
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationResponse'
+
+  /leads/{id}/enrich:
+    post:
+      summary: Trigger Manual Contact Enrichment
+      security:
+        - BearerAuth: []
+      operationId: enrichLeadContact
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [provider, confirmed_credits]
+              properties:
+                provider:
+                  type: string
+                  enum: [contactout, snov]
+                confirmed_credits:
+                  type: integer
+                  minimum: 1
+      responses:
+        '200':
+          description: Enrichment outcome
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnrichmentResponse'
+        '422':
+          description: Missing confirmed credits confirmation or budget exceeded.
+
+  /campaigns:
+    get:
+      summary: List Campaigns
+      security:
+        - BearerAuth: []
+      operationId: listCampaigns
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CampaignSummary'
+
+  /campaigns/{id}/drafts:
+    post:
+      summary: Generate AI Email Draft
+      security:
+        - BearerAuth: []
+      operationId: generateCampaignDraft
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [opportunity_id, recipient_contact_method_id]
+              properties:
+                opportunity_id:
+                  type: string
+                recipient_contact_method_id:
+                  type: string
+                tone:
+                  type: string
+                  enum: [hr, tpo, startup_founder]
+                  default: hr
+      responses:
+        '200':
+          description: Generated draft
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DraftResponse'
+        '409':
+          description: Lead is not eligible (score < 80 or suppressed).
+
+  /approvals:
+    post:
+      summary: Human Approval of Draft
+      security:
+        - BearerAuth: []
+      operationId: approveDraft
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [draft_id, approved]
+              properties:
+                draft_id:
+                  type: string
+                approved:
+                  type: boolean
+                edited_subject:
+                  type: string
+                edited_body:
+                  type: string
+      responses:
+        '200':
+          description: Draft approved and locked for dispatch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalResponse'
+
+  /dispatch/send:
+    post:
+      summary: Idempotent Dispatch Approved Message
+      security:
+        - BearerAuth: []
+      operationId: sendOutreach
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [draft_id, idempotency_key]
+              properties:
+                draft_id:
+                  type: string
+                idempotency_key:
+                  type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendResponse'
+        '400':
+          description: Pre-send validation failed (suppression, unverified, limits exceeded).
+
+  /suppression:
+    get:
+      summary: List Suppressed Emails and Domains
+      security:
+        - BearerAuth: []
+      operationId: listSuppression
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SuppressionEntry'
+    post:
+      summary: Add Suppression Entry
+      security:
+        - BearerAuth: []
+      operationId: addSuppression
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSuppressionRequest'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuppressionEntry'
+
+  /webhooks/scraper-ingest:
+    post:
+      summary: Webhook for Scraper Ingestion
+      description: Ingests batches of discovered opportunities from scrapers / n8n.
+      parameters:
+        - name: X-Scraper-Secret
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [source_id, items]
+              properties:
+                source_id:
+                  type: string
+                items:
+                  type: array
+                  maxItems: 200
+                  items:
+                    $ref: '#/components/schemas/RawScraperLead'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestResult'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    Unauthorized:
+      description: Missing or invalid authentication token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    HealthResponse:
+      type: object
+      required: [status, version, timestamp]
+      properties:
+        status:
+          type: string
+          example: healthy
+        version:
+          type: string
+          example: 1.0.0
+        timestamp:
+          type: string
+          format: date-time
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    TokenResponse:
+      type: object
+      required: [access_token, token_type, expires_in, user]
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+          example: Bearer
+        expires_in:
+          type: integer
+          example: 3600
+        user:
+          $ref: '#/components/schemas/UserResponse'
+
+    UserResponse:
+      type: object
+      required: [id, email, full_name, role, is_active]
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        full_name:
+          type: string
+        role:
+          type: string
+          enum: [admin, researcher, campaign_manager, developer]
+        is_active:
+          type: boolean
+
+    LeadSummary:
+      type: object
+      required: [id, organization_name, title, opportunity_type, source_name, status, score, score_band, discovered_at]
+      properties:
+        id:
+          type: string
+        organization_name:
+          type: string
+        title:
+          type: string
+        opportunity_type:
+          type: string
+          enum: [job, startup, internship, hackathon, college]
+        source_name:
+          type: string
+        source_url:
+          type: string
+        experience_min:
+          type: integer
+          nullable: true
+        experience_max:
+          type: integer
+          nullable: true
+        salary_text:
+          type: string
+          nullable: true
+        location:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [new, needs_enrichment, verified, draft_ready, approved, sent, closed]
+        score:
+          type: integer
+          minimum: 0
+          maximum: 100
+        score_band:
+          type: string
+          enum: [high, medium, low, suppressed]
+        assigned_to:
+          type: string
+          nullable: true
+        discovered_at:
+          type: string
+          format: date-time
+
+    LeadDetailResponse:
+      allOf:
+        - $ref: '#/components/schemas/LeadSummary'
+        - type: object
+          properties:
+            description:
+              type: string
+            contacts:
+              type: array
+              items:
+                $ref: '#/components/schemas/ContactDetail'
+            score_reasons:
+              type: array
+              items:
+                $ref: '#/components/schemas/ScoreReason'
+            factor_breakdown:
+              type: object
+            published_at:
+              type: string
+              format: date-time
+              nullable: true
+
+    ContactDetail:
+      type: object
+      required: [id, name, methods]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        role_title:
+          type: string
+          nullable: true
+        methods:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              kind:
+                type: string
+                enum: [email, phone, linkedin_url]
+              value:
+                type: string
+              verified_status:
+                type: string
+                enum: [deliverable, undeliverable, catch_all, risky, unknown, failed]
+              verified_at:
+                type: string
+                format: date-time
+                nullable: true
+
+    ScoreReason:
+      type: object
+      required: [code, description, points]
+      properties:
+        code:
+          type: string
+        description:
+          type: string
+        points:
+          type: integer
+
+    PaginatedLeadsResponse:
+      type: object
+      required: [items, total, page, page_size, total_pages]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LeadSummary'
+        total:
+          type: integer
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_pages:
+          type: integer
+
+    VerificationResponse:
+      type: object
+      required: [status, result, checked_at]
+      properties:
+        status:
+          type: string
+        result:
+          type: string
+          enum: [deliverable, undeliverable, catch_all, risky, unknown, failed]
+        checked_at:
+          type: string
+          format: date-time
+
+    EnrichmentResponse:
+      type: object
+      required: [status, provider, credits_used]
+      properties:
+        status:
+          type: string
+        provider:
+          type: string
+        credits_used:
+          type: integer
+        contact:
+          $ref: '#/components/schemas/ContactDetail'
+
+    CampaignSummary:
+      type: object
+      required: [id, name, purpose, status, daily_limit]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        purpose:
+          type: string
+        status:
+          type: string
+          enum: [draft, active, paused, completed]
+        daily_limit:
+          type: integer
+
+    DraftResponse:
+      type: object
+      required: [draft_id, model, prompt_version, ai_output]
+      properties:
+        draft_id:
+          type: string
+        model:
+          type: string
+        prompt_version:
+          type: string
+        ai_output:
+          $ref: '#/components/schemas/AIDraftOutput'
+
+    AIDraftOutput:
+      type: object
+      required: [subject, body, personalization_summary, claims_used, missing_information_warnings, confidence_note]
+      properties:
+        subject:
+          type: string
+          maxLength: 80
+        body:
+          type: string
+        personalization_summary:
+          type: string
+        claims_used:
+          type: array
+          items:
+            type: object
+            properties:
+              fact_id:
+                type: string
+              claim:
+                type: string
+        missing_information_warnings:
+          type: array
+          items:
+            type: string
+        confidence_note:
+          type: string
+
+    ApprovalResponse:
+      type: object
+      required: [approval_id, content_hash, approved_at]
+      properties:
+        approval_id:
+          type: string
+        content_hash:
+          type: string
+        approved_at:
+          type: string
+          format: date-time
+
+    SendResponse:
+      type: object
+      required: [message_id, provider, status, sent_at]
+      properties:
+        message_id:
+          type: string
+        provider:
+          type: string
+        status:
+          type: string
+        sent_at:
+          type: string
+          format: date-time
+
+    SuppressionEntry:
+      type: object
+      required: [id, value, kind, reason, created_at]
+      properties:
+        id:
+          type: string
+        value:
+          type: string
+        kind:
+          type: string
+          enum: [email, domain]
+        reason:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    CreateSuppressionRequest:
+      type: object
+      required: [value, kind, reason]
+      properties:
+        value:
+          type: string
+        kind:
+          type: string
+          enum: [email, domain]
+        reason:
+          type: string
+
+    RawScraperLead:
+      type: object
+      required: [company_name, title, source_identifier, source_url]
+      properties:
+        company_name:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        experience_text:
+          type: string
+        salary_text:
+          type: string
+        location:
+          type: string
+        opportunity_type:
+          type: string
+        source_identifier:
+          type: string
+        source_url:
+          type: string
+        published_at:
+          type: string
+
+    IngestResult:
+      type: object
+      required: [inserted, updated, skipped, rejected]
+      properties:
+        inserted:
+          type: integer
+        updated:
+          type: integer
+        skipped:
+          type: integer
+        rejected:
+          type: integer
+
+    ErrorResponse:
+      type: object
+      required: [status, code, message]
+      properties:
+        status:
+          type: integer
+        code:
+          type: string
+        message:
+          type: string
+        correlation_id:
+          type: string

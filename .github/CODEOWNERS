@@ -1,0 +1,35 @@
+# ==============================================================================
+# GitHub CODEOWNERS
+# Ensures domain leads automatically review changes and block unauthorized edits.
+# ==============================================================================
+
+# Default fallback for repository leads
+*                                   @Akshay-Sharma777
+
+# Shared configuration and contracts (LEADS ONLY)
+/package.json                       @Akshay-Sharma777
+/docker-compose.yml                 @Akshay-Sharma777
+/.env.example                       @Akshay-Sharma777
+/.github/                           @Akshay-Sharma777
+/contracts/                         @Akshay-Sharma777
+/backend/requirements.txt           @Akshay-Sharma777
+/backend/Dockerfile                 @Akshay-Sharma777
+/frontend/package.json              @Akshay-Sharma777
+
+# Frontend Team
+/frontend/                          @Akshay-Sharma777
+/docs/frontend-guide.md             @Akshay-Sharma777
+
+# Backend Core & Data Team
+/backend/                           @Akshay-Sharma777
+/database/                          @Akshay-Sharma777
+/docs/backend-guide.md              @Akshay-Sharma777
+
+# Automation & Scrapers Team
+/automation/                        @Akshay-Sharma777
+/infra/                             @Akshay-Sharma777
+/docs/error-playbook.md             @Akshay-Sharma777
+
+# AI Team
+/ai/                                @Akshay-Sharma777
+/docs/ai-guide.md                   @Akshay-Sharma777
