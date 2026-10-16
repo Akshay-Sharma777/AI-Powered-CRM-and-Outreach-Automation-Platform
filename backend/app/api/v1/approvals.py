@@ -3,6 +3,7 @@ Human Approval and Dispatch Endpoints.
 """
 
 import hashlib
+from typing import Optional
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel

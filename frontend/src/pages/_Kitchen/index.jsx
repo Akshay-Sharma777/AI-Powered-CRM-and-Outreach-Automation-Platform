@@ -47,15 +47,34 @@ export default function KitchenSinkPage() {
         </div>
       </section>
 
-      {/* Score Badges */}
+      {/* Score Badges & Status Badges */}
       <section style={{ backgroundColor: 'var(--color-bg-surface)', padding: '24px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)' }}>
-        <h2 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '16px' }}>Data Quality Score Badges</h2>
+        <h2 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '16px' }}>Badges & Data Quality Scores</h2>
+        <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap', marginBottom: '16px' }}>
+          <Badge variant="info">Info Badge</Badge>
+          <Badge variant="success">Success Badge</Badge>
+          <Badge variant="warning">Warning Badge</Badge>
+          <Badge variant="danger">Danger Badge</Badge>
+        </div>
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
           <ScoreBadge score={94} band="high" reasons={[{ code: 'OFFICIAL_COMPANY_SOURCE' }, { code: 'EMAIL_VERIFIED_DELIVERABLE' }]} />
           <ScoreBadge score={72} band="medium" reasons={[{ code: 'AGGREGATOR_SOURCE' }, { code: 'EMAIL_CATCH_ALL' }]} />
           <ScoreBadge score={48} band="low" reasons={[{ code: 'EMAIL_UNVERIFIED' }, { code: 'DATA_AGED' }]} />
           <ScoreBadge score={0} band="suppressed" reasons={[{ code: 'Recipient domain suppressed' }]} />
         </div>
+      </section>
+
+      {/* Table Component */}
+      <section style={{ backgroundColor: 'var(--color-bg-surface)', padding: '24px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)' }}>
+        <h2 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '16px' }}>Responsive Table Component</h2>
+        <Table headers={['ID', 'Company', 'Status', 'Score']}>
+          <tr>
+            <td style={{ padding: '12px 16px' }}>#1</td>
+            <td style={{ padding: '12px 16px', fontWeight: 600 }}>Acme Corp</td>
+            <td style={{ padding: '12px 16px' }}><Badge variant="success">Verified</Badge></td>
+            <td style={{ padding: '12px 16px' }}><ScoreBadge score={92} band="high" /></td>
+          </tr>
+        </Table>
       </section>
 
       {/* Feedback States */}

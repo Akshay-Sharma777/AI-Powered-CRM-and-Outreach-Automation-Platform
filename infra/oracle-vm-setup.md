@@ -60,3 +60,4 @@ Verify service status:
 docker compose ps
 curl http://localhost:8000/api/v1/health
 ```
+

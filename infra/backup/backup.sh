@@ -38,3 +38,4 @@ find "${BACKUP_DIR}/daily" -type f -name "*.sql.gz" -mtime +7 -delete
 find "${BACKUP_DIR}/weekly" -type f -name "*.sql.gz" -mtime +28 -delete
 
 echo "[$(date -u)] Database backup completed successfully: ${DUMP_FILE}"
+

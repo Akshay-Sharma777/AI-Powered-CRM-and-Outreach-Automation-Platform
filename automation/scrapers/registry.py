@@ -4,7 +4,7 @@ Maps validated source keys to their respective Scraper implementation classes.
 Unlisted or disabled sources cannot be executed.
 """
 
-from typing import Dict, Type
+from typing import Dict, Type, Any
 from automation.scrapers.base import BaseScraper
 
 
