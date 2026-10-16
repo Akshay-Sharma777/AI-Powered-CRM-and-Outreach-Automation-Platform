@@ -43,7 +43,7 @@ jobs:
           EMAIL_SANDBOX_MODE: "true"
           ENRICHMENT_SANDBOX: "true"
         run: |
-          pytest -v backend/tests ai/evals/ci_eval.py --ignore=backend/tests/manual
+          python -m pytest -v backend/tests ai/evals/ci_eval.py --ignore=backend/tests/manual
 
   frontend-checks:
     name: Frontend Quality Checks
