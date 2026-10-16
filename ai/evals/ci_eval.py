@@ -43,5 +43,10 @@ def run_ci_eval():
     return 0
 
 
+def test_ci_eval():
+    """Pytest test case executing CI eval runner."""
+    assert run_ci_eval() == 0
+
+
 if __name__ == "__main__":
     sys.exit(run_ci_eval())

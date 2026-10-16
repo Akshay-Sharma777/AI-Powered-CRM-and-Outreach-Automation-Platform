@@ -4,7 +4,7 @@ Login with JWT tokens and user profile retrieval.
 """
 
 from fastapi import APIRouter, HTTPException, status, Depends
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 
 from backend.app.core.security import create_access_token, get_current_user
 
@@ -12,7 +12,7 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
 class LoginRequest(BaseModel):
-    email: EmailStr
+    email: str
     password: str
 
 

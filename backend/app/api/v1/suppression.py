@@ -4,7 +4,7 @@ Suppression & Do-Not-Contact Management Router.
 
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 from backend.app.core.security import require_roles
 
 router = APIRouter(prefix="/suppression", tags=["Suppression"])
