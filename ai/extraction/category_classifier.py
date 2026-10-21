@@ -3,6 +3,7 @@ Lead Category Classifier.
 Classifies opportunities into: 'job', 'startup', 'internship', 'hackathon', 'college_tpo'.
 """
 
+import re
 from typing import Dict, Any, Tuple
 
 
@@ -21,7 +22,10 @@ def classify_category(record: Dict[str, Any]) -> Tuple[str, float]:
     if any(k in combined for k in ["placement cell", "tpo", "on-campus", "campus drive", "placement officer"]):
         return "college_tpo", 0.95
 
-    if any(k in combined for k in ["intern", "internship", "stipend"]):
+    if any(
+        re.search(rf"\b{re.escape(k)}\b", combined)
+        for k in ["intern", "internship", "stipend"]
+    ):
         return "internship", 0.95
 
     if any(k in combined for k in ["founding engineer", "early stage", "yc", "seed funded", "stealth startup"]):
