@@ -22,6 +22,33 @@ def test_internship():
     assert 0 <= confidence <= 1
 
 
+def test_interns_plural():
+    category, confidence = classify_category({
+        "title": "Engineering Interns"
+    })
+
+    assert category == "internship"
+    assert 0 <= confidence <= 1
+
+
+def test_internships_plural():
+    category, confidence = classify_category({
+        "title": "2026 Internships"
+    })
+
+    assert category == "internship"
+    assert 0 <= confidence <= 1
+
+
+def test_stipends_plural():
+    category, confidence = classify_category({
+        "title": "Stipends available"
+    })
+
+    assert category == "internship"
+    assert 0 <= confidence <= 1
+
+
 def test_internal_word_is_not_internship():
     category, confidence = classify_category({
         "title": "Python Junior",

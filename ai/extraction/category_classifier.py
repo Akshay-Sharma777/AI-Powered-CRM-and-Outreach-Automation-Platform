@@ -1,3 +1,4 @@
+
 """
 Lead Category Classifier.
 Classifies opportunities into: 'job', 'startup', 'internship', 'hackathon', 'college_tpo'.
@@ -22,9 +23,14 @@ def classify_category(record: Dict[str, Any]) -> Tuple[str, float]:
     if any(k in combined for k in ["placement cell", "tpo", "on-campus", "campus drive", "placement officer"]):
         return "college_tpo", 0.95
 
+    # Match internship keywords as complete words, including plural forms.
     if any(
-        re.search(rf"\b{re.escape(k)}\b", combined)
-        for k in ["intern", "internship", "stipend"]
+        re.search(pattern, combined)
+        for pattern in [
+            r"\binterns?\b",
+            r"\binternships?\b",
+            r"\bstipends?\b",
+        ]
     ):
         return "internship", 0.95
 
