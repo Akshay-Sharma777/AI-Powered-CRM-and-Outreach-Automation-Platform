@@ -18,7 +18,7 @@
 - Use correct grammar and spelling.
 - Make the email sound natural, not like a sales advertisement.
 
-# DO NOT - What the AI Should Avoid ->
+# DON'T - What the AI Should Avoid ->
 - Do not write long and confusing emails.
 - Do not use rude or overly casual language.
 - Do not make false promises about business growth.
