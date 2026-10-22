@@ -74,7 +74,7 @@ Reply as soon as possible. You will never have recruitment problems again!
 
 Thanks!!!
 
-## Why the Bad Example is Wrong
+## Why the Bad Example is Wrong ->
 
 - The example uses overly casual and unprofessional language that is unsuitable for corporate communication.
 
