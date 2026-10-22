@@ -1,7 +1,7 @@
 
 # HR Tone > Corporate Recruiters
 
-## DO — How the AI Should Write
+## DO —> How the AI Should Write
 
 Write in a professional, polite, and respectful manner when communicating with corporate recruiters.
 
@@ -23,7 +23,7 @@ Use correct grammar, proper punctuation, and professional language throughout th
 
 Keep the message focused on its primary purpose. Avoid unnecessary details that may distract the recruiter from the main point.
 
-## DON'T — What the AI Should Avoid
+## DON'T —> What the AI Should Avoid
 
 Do not use slang, rude words, or overly casual expressions that may sound unprofessional when communicating with corporate recruiters.
 
@@ -74,7 +74,7 @@ Reply as soon as possible. You will never have recruitment problems again!
 
 Thanks!!!
 
-## Why the Bad Example Is Wrong
+## Why the Bad Example is Wrong
 
 The example uses overly casual and unprofessional language that is unsuitable for corporate communication.
 
