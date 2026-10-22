@@ -3,25 +3,25 @@
 
 ## DO -> How the AI Should Write
 
-Write in a professional, polite, and respectful manner when communicating with corporate recruiters.
+- Write in a professional, polite, and respectful manner when communicating with corporate recruiters.
 
-Keep emails clear, concise, and easy to understand. Use simple language to communicate the message effectively.
+- Keep emails clear, concise, and easy to understand. Use simple language to communicate the message effectively.
 
-Focus on the company's hiring needs and recruitment goals. Ensure that the message is relevant to the recruiter's role and responsibilities.
+- Focus on the company's hiring needs and recruitment goals. Ensure that the message is relevant to the recruiter's role and responsibilities.
 
-Explain how our platform can help recruitment teams save time, organize leads, manage contact information, and streamline recruitment communications.
+- Explain how our platform can help recruitment teams save time, organize leads, manage contact information, and streamline recruitment communications.
 
-Use a friendly but professional greeting that creates a positive first impression.
+-Use a friendly but professional greeting that creates a positive first impression.
 
-Personalize emails using the recruiter's name, company name, and relevant company details whenever this information is available.
+- Personalize emails using the recruiter's name, company name, and relevant company details whenever this information is available.
 
-Explain the benefits of the service honestly and accurately. Only describe features and capabilities that are supported by verified information.
+- Explain the benefits of the service honestly and accurately. Only describe features and capabilities that are supported by verified information.
 
-End the email with a polite question or a clear next step, such as asking whether the recruiter would be available for a short discussion.
+- End the email with a polite question or a clear next step, such as asking whether the recruiter would be available for a short discussion.
 
-Use correct grammar, proper punctuation, and professional language throughout the email.
+- Use correct grammar, proper punctuation, and professional language throughout the email.
 
-Keep the message focused on its primary purpose. Avoid unnecessary details that may distract the recruiter from the main point.
+- Keep the message focused on its primary purpose. Avoid unnecessary details that may distract the recruiter from the main point.
 
 ## DON'T -> What the AI Should Avoid
 
