@@ -1,5 +1,5 @@
 
-# HR Tone -> Corporate Recruiters
+# HR Tone - Corporate Recruiters
 
 ## Tone -> How the AI Should Communicate
 
@@ -104,6 +104,7 @@ I would like to learn more about your current hiring needs and understand whethe
 Would you be available for a short discussion next week?
 
 Best regards,  
+
 Rahul
 
 ## Bad Tone Example
