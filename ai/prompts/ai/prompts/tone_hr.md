@@ -11,7 +11,7 @@
 
 - Explain how our platform can help recruitment teams save time, organize leads, manage contact information, and streamline recruitment communications.
 
--Use a friendly but professional greeting that creates a positive first impression.
+- Use a friendly but professional greeting that creates a positive first impression.
 
 - Personalize emails using the recruiter's name, company name, and relevant company details whenever this information is available.
 
@@ -25,25 +25,25 @@
 
 ## DON'T -> What the AI Should Avoid
 
-Do not use slang, rude words, or overly casual expressions that may sound unprofessional when communicating with corporate recruiters.
+- Do not use slang, rude words, or overly casual expressions that may sound unprofessional when communicating with corporate recruiters.
 
-Do not make false promises or guarantee specific hiring outcomes. Avoid claiming that the platform will solve every recruitment challenge or guarantee successful placements.
+- Do not make false promises or guarantee specific hiring outcomes. Avoid claiming that the platform will solve every recruitment challenge or guarantee successful placements.
 
-Do not invent candidate qualifications, work experience, skills, or other professional details that have not been verified.
+- Do not invent candidate qualifications, work experience, skills, or other professional details that have not been verified.
 
-Do not make unsupported claims about the platform's features, performance, or capabilities. Ensure that all statements about the service are accurate and evidence-based.
+- Do not make unsupported claims about the platform's features, performance, or capabilities. Ensure that all statements about the service are accurate and evidence-based.
 
-Do not overuse exclamation marks, capital letters, or exaggerated expressions that may make the email appear unprofessional.
+- Do not overuse exclamation marks, capital letters, or exaggerated expressions that may make the email appear unprofessional.
 
-Do not pressure recruiters to respond immediately or create a false sense of urgency. Allow them to decide when and how to respond.
+- Do not pressure recruiters to respond immediately or create a false sense of urgency. Allow them to decide when and how to respond.
 
-Do not include irrelevant information, unnecessary explanations, or details that do not contribute to the purpose of the email.
+- Do not include irrelevant information, unnecessary explanations, or details that do not contribute to the purpose of the email.
 
-Do not write confusing, repetitive, or excessively long emails. Keep the content concise while ensuring that the main message is clear.
+- Do not write confusing, repetitive, or excessively long emails. Keep the content concise while ensuring that the main message is clear.
 
-Do not use aggressive sales language, exaggerated marketing claims, or pushy statements that may reduce the recruiter's trust.
+- Do not use aggressive sales language, exaggerated marketing claims, or pushy statements that may reduce the recruiter's trust.
 
-Do not share confidential candidate information or personal data without proper authorization. Respect candidate privacy and applicable data protection requirements.
+- Do not share confidential candidate information or personal data without proper authorization. Respect candidate privacy and applicable data protection requirements.
 
 ## Good Tone Example
 
@@ -76,14 +76,14 @@ Thanks!!!
 
 ## Why the Bad Example is Wrong
 
-The example uses overly casual and unprofessional language that is unsuitable for corporate communication.
+- The example uses overly casual and unprofessional language that is unsuitable for corporate communication.
 
-It makes unrealistic promises and guarantees hiring outcomes that cannot be assured.
+- It makes unrealistic promises and guarantees hiring outcomes that cannot be assured.
 
-It overuses capital letters and exclamation marks, making the email appear exaggerated and unprofessional.
+- It overuses capital letters and exclamation marks, making the email appear exaggerated and unprofessional.
 
-It pressures the recruiter to respond immediately instead of allowing them to decide when to reply.
+- It pressures the recruiter to respond immediately instead of allowing them to decide when to reply.
 
-It uses aggressive sales language that may make the recruiter uncomfortable and reduce trust in the service.
+- It uses aggressive sales language that may make the recruiter uncomfortable and reduce trust in the service.
 
-It does not sound professional, credible, or trustworthy, and it fails to establish a respectful business relationship.
+- It does not sound professional, credible, or trustworthy, and it fails to establish a respectful business relationship.
