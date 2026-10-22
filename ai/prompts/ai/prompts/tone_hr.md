@@ -67,7 +67,7 @@ The AI should communicate with corporate recruiters in a professional, polite, r
 
 - Previous conversation details, if available and relevant, to maintain context and avoid repeating information.
 
-If any required information is unavailable, the AI should avoid inventing details and should generate a suitable generic message or request clarification when necessary.
+- If any required information is unavailable, the AI should avoid inventing details and should generate a suitable generic message or request clarification when necessary.
 
 ## Output -> Format of the Generated Message
 
@@ -89,7 +89,7 @@ The email should follow this structure:
 
 The generated email should use proper grammar, professional language, and short paragraphs. It should be ready to review and send, without unnecessary explanations, unsupported claims, or invented information.
 
-## Good Tone Example
+## Good Tone Example ->
 
 **Subject:** Support for Your Recruitment Needs
 
@@ -107,7 +107,7 @@ Best regards,
 
 Rahul
 
-## Bad Tone Example
+## Bad Tone Example ->
 
 **Subject:** Our Amazing Tool Will Fix Everything!!!
 
