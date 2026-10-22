@@ -22,6 +22,26 @@ def test_internship():
     assert 0 <= confidence <= 1
 
 
+def test_internship_singular_keyword():
+    category, confidence = classify_category({
+        "title": "Software Opportunity",
+        "description": "This internship offers practical experience."
+    })
+
+    assert category == "internship"
+    assert 0 <= confidence <= 1
+
+
+def test_stipend_singular_keyword():
+    category, confidence = classify_category({
+        "title": "Paid Training Opportunity",
+        "description": "A stipend is provided during the program."
+    })
+
+    assert category == "internship"
+    assert 0 <= confidence <= 1
+
+
 def test_interns_plural():
     category, confidence = classify_category({
         "title": "Engineering Interns"
