@@ -65,6 +65,7 @@ I understand that running a startup involves managing many tasks at once. Our pl
 Would you be available for a quick 15-minute call next week to see whether it fits your needs?
 
 Best regards,
+
 Rahul
 
 # Bad Tone Example ->
