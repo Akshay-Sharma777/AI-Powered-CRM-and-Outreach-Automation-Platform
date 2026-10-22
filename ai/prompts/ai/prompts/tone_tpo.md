@@ -67,6 +67,7 @@ I would like to learn more about your placement activities and understand whethe
 Would you be available for a short discussion next week?
 
 Best regards,
+
 Rahul
 
 # Bad Tone Example ->
