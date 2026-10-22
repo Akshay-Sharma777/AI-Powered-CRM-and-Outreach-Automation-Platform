@@ -1,6 +1,6 @@
 # HR Sample Email
 
-Subject: Help With Your Recruitment Process
+Subject : Help With Your Recruitment Process
 
 Hello Priya,
 
