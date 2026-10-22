@@ -30,7 +30,7 @@
 - Do not share private student information without permission.
 - Do not include information that is unrelated to placements.
 
-# Inputs - Information the AI Needs
+# Inputs -> Information the AI Needs
 - TPO's name, if available.
 - College or university name.
 - TPO's role or department.
