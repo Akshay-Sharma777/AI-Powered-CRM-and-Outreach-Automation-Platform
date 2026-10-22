@@ -17,7 +17,7 @@
 - Ask politely for a meeting or reply.
 - Use correct grammar and spelling.
 - Keep the email focused on the main purpose.
-- 
+  
 # DO NOT -> What the AI Should Avoid
 - Do not use rude or overly casual language.
 - Do not promise jobs for all students.
