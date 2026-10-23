@@ -1,6 +1,6 @@
 # Founder Sample Email
 
-Subject: Make Your Outreach Easier
+Subject: Making Your Outreach Easier
 
 Hello Arjun,
 
