@@ -2,77 +2,63 @@ import React, { useState, useEffect } from 'react'
 import { LeadTable } from './LeadTable'
 import { Input, Select } from '../../components/ui/Input'
 import { Button } from '../../components/ui/Button'
-import { Spinner, EmptyState, ErrorBanner } from '../../components/feedback/Spinner'
-import { apiClient } from '../../api/client'
-import { MOCK_LEADS } from '../../mocks/sampleLeads'
 
+/**
+ * Lead Pipeline page.
+ * FE-09: table now fetches/pages/sorts itself via the server-side API.
+ * The search + score-band controls below are TEMPORARY and are replaced by FE-10;
+ * the preview panel is a placeholder and is replaced by the FE-11 drawer.
+ */
 export default function LeadPipelinePage({ currentUser }) {
-  const [leads, setLeads] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
   const [search, setSearch] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
   const [scoreBand, setScoreBand] = useState('all')
-  const [selectedLead, setSelectedLead] = useState(null)
+  const [selectedLeadId, setSelectedLeadId] = useState(null)
+  const [refreshKey, setRefreshKey] = useState(0)
 
-  async function fetchLeads() {
-    setLoading(true)
-    setError(null)
-    try {
-      const data = await apiClient('/leads')
-      setLeads(data.items || data)
-    } catch (err) {
-      // Offline / mock mode fallback
-      console.warn('Backend unavailable, falling back to offline fixtures:', err)
-      setLeads(MOCK_LEADS)
-    } finally {
-      setLoading(false)
-    }
-  }
-
+  // Avoid firing a request on every keystroke.
   useEffect(() => {
-    fetchLeads()
-  }, [])
+    const timer = setTimeout(() => setDebouncedSearch(search.trim()), 300)
+    return () => clearTimeout(timer)
+  }, [search])
 
-  async function handleClaimLead(leadId) {
-    try {
-      await apiClient(`/leads/${leadId}/claim`, { method: 'POST' })
-      setLeads((prev) =>
-        prev.map((l) => (l.id === leadId ? { ...l, assigned_to: currentUser?.id || 'me' } : l))
-      )
-    } catch (err) {
-      // Local optimistic update if mock mode
-      setLeads((prev) =>
-        prev.map((l) => (l.id === leadId ? { ...l, assigned_to: currentUser?.id || 'me' } : l))
-      )
-    }
+  const filters = {
+    search: debouncedSearch,
+    score_band: scoreBand === 'all' ? '' : scoreBand,
   }
-
-  const filteredLeads = leads.filter((lead) => {
-    const matchesSearch =
-      !search ||
-      lead.title.toLowerCase().includes(search.toLowerCase()) ||
-      lead.organization_name.toLowerCase().includes(search.toLowerCase())
-    const matchesBand = scoreBand === 'all' || lead.score_band === scoreBand
-    return matchesSearch && matchesBand
-  })
 
   return (
-    <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <div
+      style={{
+        padding: '24px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '20px',
+        minWidth: 0,
+        maxWidth: '100%',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '12px',
+        }}
+      >
         <div>
           <h1 style={{ fontSize: '22px', fontWeight: 700 }}>Lead Pipeline & Discovery</h1>
           <p style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>
             Daily scraped 0-2 yr fresher opportunities across verified platforms.
           </p>
         </div>
-        <Button variant="secondary" onClick={fetchLeads}>
+        <Button variant="secondary" onClick={() => setRefreshKey((k) => k + 1)}>
           ↻ Refresh
         </Button>
       </div>
 
-      {error && <ErrorBanner message={error} onRetry={fetchLeads} />}
-
-      {/* Filter Bar */}
+      {/* Temporary filter bar (replaced by FE-10) */}
       <div
         style={{
           display: 'flex',
@@ -81,7 +67,7 @@ export default function LeadPipelinePage({ currentUser }) {
           padding: '16px',
           borderRadius: 'var(--radius-md)',
           border: '1px solid var(--color-border)',
-          flexWrap: 'wrap'
+          flexWrap: 'wrap',
         }}
       >
         <div style={{ flex: 1, minWidth: '240px' }}>
@@ -100,60 +86,43 @@ export default function LeadPipelinePage({ currentUser }) {
               { value: 'high', label: 'High (80+ Eligible)' },
               { value: 'medium', label: 'Medium (60-79)' },
               { value: 'low', label: 'Low (< 60)' },
-              { value: 'suppressed', label: 'Suppressed' }
+              { value: 'suppressed', label: 'Suppressed' },
             ]}
           />
         </div>
       </div>
 
-      {/* Table Content */}
-      {loading ? (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '48px' }}>
-          <Spinner size={32} />
-        </div>
-      ) : filteredLeads.length === 0 ? (
-        <EmptyState
-          title="No leads match your criteria"
-          message="Try adjusting your search terms or score band filter."
-        />
-      ) : (
-        <LeadTable
-          leads={filteredLeads}
-          currentUserId={currentUser?.id}
-          onClaimLead={handleClaimLead}
-          onSelectLead={(lead) => setSelectedLead(lead)}
-        />
-      )}
+      <LeadTable
+        filters={filters}
+        currentUserId={currentUser?.id}
+        selectedId={selectedLeadId}
+        refreshKey={refreshKey}
+        onSelect={(leadId) => setSelectedLeadId(leadId)}
+      />
 
-      {/* Quick Detail Drawer / Modal Preview */}
-      {selectedLead && (
+      {/* Placeholder until the FE-11 Lead Detail Drawer exists */}
+      {selectedLeadId && (
         <div
           style={{
             backgroundColor: 'var(--color-bg-surface)',
             padding: '20px',
             borderRadius: 'var(--radius-md)',
-            border: '1px solid var(--color-border)'
+            border: '1px solid var(--color-border)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
           }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: 600 }}>{selectedLead.title}</h3>
-            <button
-              onClick={() => setSelectedLead(null)}
-              style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-            >
-              ✕
-            </button>
+          <div style={{ fontSize: '14px' }}>
+            Lead selected: <code>{selectedLeadId}</code> — detail drawer arrives in FE-11.
           </div>
-          <p style={{ fontSize: '14px', color: 'var(--color-text-muted)', margin: '8px 0' }}>
-            {selectedLead.organization_name} •{' '}
-            <a href={selectedLead.source_url} target="_blank" rel="noreferrer">
-              Original Listing ↗
-            </a>
-          </p>
-          <div style={{ fontSize: '13px', marginTop: '8px' }}>
-            <strong>Source Provenance:</strong> {selectedLead.source_name} • Discovered at{' '}
-            {new Date(selectedLead.discovered_at).toLocaleDateString()}
-          </div>
+          <button
+            onClick={() => setSelectedLeadId(null)}
+            aria-label="Close preview"
+            style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+          >
+            ✕
+          </button>
         </div>
       )}
     </div>
