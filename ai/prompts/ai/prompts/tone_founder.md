@@ -54,7 +54,7 @@ The email should be short, friendly, professional, and easy to read.
 
 # Good Tone Example ->
 
-Subject: Making Your Outreach Easie
+Subject: Making Your Outreach Easier
 Hello Arjun,
 
 I hope you are doing well.
