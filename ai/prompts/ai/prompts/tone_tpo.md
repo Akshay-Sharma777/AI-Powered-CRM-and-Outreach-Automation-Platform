@@ -1,4 +1,4 @@
-# TPO Tone - University Placement Officer ->
+# TPO Tone - University Placement Officer
 ## How the AI Should Communicate
 
 - The AI should use a polite, professional, and friendly tone when writing to Training and Placement Officers (TPOs).
