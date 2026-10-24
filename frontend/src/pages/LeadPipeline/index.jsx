@@ -5,6 +5,7 @@ import { Button } from '../../components/ui/Button'
 import { Spinner, EmptyState, ErrorBanner } from '../../components/feedback/Spinner'
 import { apiClient } from '../../api/client'
 import { MOCK_LEADS } from '../../mocks/sampleLeads'
+import LeadDetailDrawer from './LeadDetailDrawer'
 
 export default function LeadPipelinePage({ currentUser }) {
   const [leads, setLeads] = useState([])
@@ -126,36 +127,11 @@ export default function LeadPipelinePage({ currentUser }) {
       )}
 
       {/* Quick Detail Drawer / Modal Preview */}
-      {selectedLead && (
-        <div
-          style={{
-            backgroundColor: 'var(--color-bg-surface)',
-            padding: '20px',
-            borderRadius: 'var(--radius-md)',
-            border: '1px solid var(--color-border)'
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: 600 }}>{selectedLead.title}</h3>
-            <button
-              onClick={() => setSelectedLead(null)}
-              style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-            >
-              ✕
-            </button>
-          </div>
-          <p style={{ fontSize: '14px', color: 'var(--color-text-muted)', margin: '8px 0' }}>
-            {selectedLead.organization_name} •{' '}
-            <a href={selectedLead.source_url} target="_blank" rel="noreferrer">
-              Original Listing ↗
-            </a>
-          </p>
-          <div style={{ fontSize: '13px', marginTop: '8px' }}>
-            <strong>Source Provenance:</strong> {selectedLead.source_name} • Discovered at{' '}
-            {new Date(selectedLead.discovered_at).toLocaleDateString()}
-          </div>
-        </div>
-      )}
-    </div>
+      <LeadDetailDrawer
+  lead={selectedLead}
+  isOpen={!!selectedLead}
+  onClose={() => setSelectedLead(null)}
+/>
+</div>
   )
 }
