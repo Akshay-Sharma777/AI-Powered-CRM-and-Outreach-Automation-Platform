@@ -76,3 +76,27 @@ pytest ai/
 # Run the prompt quality evaluation harness
 python ai/evals/run_eval.py
 ```
+
+---
+
+## 6. Experience Range Parser (AI-05)
+
+File: `ai/extraction/experience_parser.py`
+
+`parse_experience(text)` extracts years of experience from messy job text and returns `ExperienceResult(min_experience, max_experience, opportunity_type, confidence, source)`.
+
+- **Rules first:** Regex rules handle ranges (`2-4 years`), minimum (`3+ years`), maximum (`up to 2 years`), months (`6 months` = 0.5 years), and number words (`two to four years`).
+- **Hard cases:** Numbers that are not experience requirements are ignored (`6 months internship`, `10 year old company`, `5 years ago`, `bond of 2 years`).
+- **`opportunity_type`:** one of `fresher`, `internship`, `experienced`, `unknown`.
+- **`max_experience = None`** means there is no upper limit (e.g. `5+ years`).
+- **AI fallback is OFF by default.** It runs only when `use_ai=True`, a client (such as `GeminiClient`) is passed, and the rule confidence is below 0.6. If the AI reply is invalid, the rule result is returned.
+
+```python
+from ai.extraction.experience_parser import parse_experience
+
+parse_experience("2-4 years of experience")
+# ExperienceResult(min_experience=2.0, max_experience=4.0,
+#                  opportunity_type='experienced', confidence=0.9, source='rules')
+```
+
+Tests: `pytest ai/evals/test_experience_parser.py` (40 rules-only phrases plus mock-client AI tests).
