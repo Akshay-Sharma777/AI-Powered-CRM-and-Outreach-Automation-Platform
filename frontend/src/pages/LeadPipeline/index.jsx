@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { LeadTable } from './LeadTable'
-import { Input, Select } from '../../components/ui/Input'
+import { LeadFilters } from './LeadFilters'
+import {
+  createDefaultFilters,
+  readFiltersFromUrl
+} from '../../store/filters'
 import { Button } from '../../components/ui/Button'
 import { Spinner, EmptyState, ErrorBanner } from '../../components/feedback/Spinner'
 import { apiClient } from '../../api/client'
@@ -10,8 +14,8 @@ export default function LeadPipelinePage({ currentUser }) {
   const [leads, setLeads] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [search, setSearch] = useState('')
-  const [scoreBand, setScoreBand] = useState('all')
+  const [filters, setFilters] = useState(() => readFiltersFromUrl())
+  const [appliedSearch, setAppliedSearch] = useState(() => filters.search)
   const [selectedLead, setSelectedLead] = useState(null)
 
   async function fetchLeads() {
@@ -48,14 +52,47 @@ export default function LeadPipelinePage({ currentUser }) {
   }
 
   const filteredLeads = leads.filter((lead) => {
-    const matchesSearch =
-      !search ||
-      lead.title.toLowerCase().includes(search.toLowerCase()) ||
-      lead.organization_name.toLowerCase().includes(search.toLowerCase())
-    const matchesBand = scoreBand === 'all' || lead.score_band === scoreBand
-    return matchesSearch && matchesBand
-  })
+    const query = appliedSearch.trim().toLowerCase()
 
+    const matchesSearch =
+      !query ||
+      (lead.title || '').toLowerCase().includes(query) ||
+      (lead.organization_name || '').toLowerCase().includes(query)
+
+    const matchesSource =
+      filters.sources.length === 0 ||
+      filters.sources.includes(lead.source_name)
+
+    const experienceMin = lead.experience_min ?? 0
+    const experienceMax = lead.experience_max ?? 0
+
+    const matchesExperience =
+      experienceMax >= filters.experienceMin &&
+      experienceMin <= filters.experienceMax
+
+    const matchesScore =
+      filters.scoreBand === 'all' ||
+      lead.score_band === filters.scoreBand
+
+    const matchesStatus =
+      filters.status === 'all' ||
+      lead.status === filters.status
+
+    const matchesAssigned =
+      filters.assignedTo === 'all' ||
+      (filters.assignedTo === 'unassigned'
+        ? !lead.assigned_to
+        : lead.assigned_to === filters.assignedTo)
+
+    return (
+      matchesSearch &&
+      matchesSource &&
+      matchesExperience &&
+      matchesScore &&
+      matchesStatus &&
+      matchesAssigned
+    )
+  })
   return (
     <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -73,38 +110,17 @@ export default function LeadPipelinePage({ currentUser }) {
       {error && <ErrorBanner message={error} onRetry={fetchLeads} />}
 
       {/* Filter Bar */}
-      <div
-        style={{
-          display: 'flex',
-          gap: '12px',
-          backgroundColor: 'var(--color-bg-surface)',
-          padding: '16px',
-          borderRadius: 'var(--radius-md)',
-          border: '1px solid var(--color-border)',
-          flexWrap: 'wrap'
+      <LeadFilters
+        leads={leads}
+        filters={filters}
+        onFiltersChange={setFilters}
+        onSearchChange={setAppliedSearch}
+        onClear={() => {
+          const defaults = createDefaultFilters()
+          setFilters(defaults)
+          setAppliedSearch('')
         }}
-      >
-        <div style={{ flex: 1, minWidth: '240px' }}>
-          <Input
-            placeholder="Search company or job title..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-        <div style={{ width: '180px' }}>
-          <Select
-            value={scoreBand}
-            onChange={(e) => setScoreBand(e.target.value)}
-            options={[
-              { value: 'all', label: 'All Score Bands' },
-              { value: 'high', label: 'High (80+ Eligible)' },
-              { value: 'medium', label: 'Medium (60-79)' },
-              { value: 'low', label: 'Low (< 60)' },
-              { value: 'suppressed', label: 'Suppressed' }
-            ]}
-          />
-        </div>
-      </div>
+      />
 
       {/* Table Content */}
       {loading ? (
