@@ -1,17 +1,16 @@
 # HR Sample Email
 
-Subject: Supporting Your Recruitment Workflow
+Subject: Improve Your Recruitment Outreach Workflow
 
 Hello Priya,
 
-I hope you are doing well.
+Your recruitment team needs clear communication and organized contacts to keep hiring activities moving efficiently.
 
-Our platform helps teams organize contact information and prepare personalized outreach emails. These capabilities may support recruitment teams in managing communication and reducing repetitive administrative tasks.
+Our platform helps teams manage contact details and prepare personalized outreach emails. These capabilities may help reduce repetitive administrative work and keep recruitment communications organized.
 
-I would welcome an opportunity to understand your team's current recruitment priorities and processes. Where reliable performance data is available, we can review relevant measures, such as outreach response rates or time spent on administrative tasks. We would not assume improvements without supporting evidence.
+I'd welcome a brief conversation about your team's current recruitment priorities. If you have reliable performance data, we can discuss relevant measures, such as outreach response rates or time spent on administrative tasks, to understand your existing workflow. We will not assume improvements or claim results without supporting evidence.
 
-Would you be available for a brief discussion next week to explore whether our platform fits your team's requirements?
+Would you be available for a 15-minute discussion next week to explore whether our platform meets your team's needs?
 
 Best regards,
-
 Rahul
