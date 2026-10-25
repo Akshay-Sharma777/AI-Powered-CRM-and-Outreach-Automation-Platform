@@ -1,18 +1,16 @@
 # Founder Sample Email
 
-Subject: Making Your Outreach Easier
+Subject: Simplifying Startup Outreach
 
 Hello Arjun,
 
-I hope you are doing well.
+Running a startup means balancing product development, customer relationships, and many other priorities.
 
-I want to introduce our platform, which helps teams organize leads, save contact details, and write personalized emails. It can help your team manage contacts and spend less time on repetitive tasks.
+Our platform helps teams organize leads, manage contact information, and prepare personalized outreach emails. It may help reduce repetitive administrative work and keep your team's communications organized.
 
-I understand that running a startup involves many responsibilities. Our platform may help your team keep leads organized and make contacting potential customers easier.
+Every startup has different needs, so I would be interested in learning how your team currently manages leads and outreach. We can then discuss whether our platform's available capabilities are relevant to your workflow.
 
-I would like to learn more about your startup and understand whether our platform could be useful to your team.
-
-Would you be available for a short 15-minute meeting next week?
+Would you be available for a brief 15-minute conversation next week?
 
 Best regards,
 
