@@ -1,4 +1,4 @@
-Founder Sample Email
+# Founder Sample Email
 
 Subject: Make Startup Outreach Simpler
 
