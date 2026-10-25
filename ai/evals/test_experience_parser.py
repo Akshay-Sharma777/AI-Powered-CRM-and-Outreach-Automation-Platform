@@ -63,6 +63,15 @@ EXTRA_CASES = [
     ("1 year - 3 experience", 1, 3, "experienced"),
     ("3 years minimum experience", 3, None, "experienced"),
     ("3 yrs min", 3, None, "experienced"),
+    ("minimum 3 years", 3, None, "experienced"),
+    ("5 years ago", None, None, "unknown"),
+    ("bond of 2 years", None, None, "unknown"),
+    ("Service bond of 2 years. Freshers welcome", 0, 0, "fresher"),
+    ("3 months internship", 0, 0, "internship"),
+    ("Internship duration: 3 months", 0, 0, "internship"),
+    ("Notice period 3 months", None, None, "unknown"),
+    ("Stipend 10000 for 6 months", None, None, "unknown"),
+    ("Experience with 5 projects delivered", None, None, "unknown"),
 ]
 
 
@@ -176,3 +185,10 @@ def test_ai_invalid_values_fall_back_to_rules(reply):
     r = parse_experience(LOW_CONF_TEXT, use_ai=True, client=client)
     assert client.calls == 1
     assert r.source == "rules"
+
+
+def test_ambiguous_number_gets_low_confidence():
+    # "5 years" here is not a requirement; rules cannot be sure, so the
+    # confidence stays below 0.6 and the optional AI fallback can step in.
+    r = parse_experience("Worked 5 years at Google before founding us")
+    assert r.confidence < 0.6
