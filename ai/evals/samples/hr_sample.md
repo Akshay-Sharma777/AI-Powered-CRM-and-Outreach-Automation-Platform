@@ -1,17 +1,16 @@
 # HR Sample Email
 
-Subject: Help With Your Recruitment Process
+Subject: Supporting Your Recruitment Workflow
 
 Hello Priya,
 
 I hope you are doing well.
 
-I want to introduce our platform, which helps recruitment teams organize leads, save contact details, and write personalized emails. It can help your team manage contacts and reduce repetitive work.
+Our platform helps teams organize contact information and prepare personalized outreach emails. These capabilities may support recruitment teams in managing communication and reducing repetitive administrative tasks.
 
-I would like to know more about your hiring needs and understand whether our platform could help your team. We would be happy to explain how the platform works and answer any questions you may have.
+I would welcome an opportunity to understand your team's current recruitment priorities and processes. Where reliable performance data is available, we can review relevant measures, such as outreach response rates or time spent on administrative tasks. We would not assume improvements without supporting evidence.
 
-Would you be available for a short meeting next week to discuss this?
+Would you be available for a brief discussion next week to explore whether our platform fits your team's requirements?
 
 Best regards,
-
 Rahul
