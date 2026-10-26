@@ -49,6 +49,34 @@ function sanitizeNonNegative(val) {
 }
 
 /**
+ * Determines the status level ('normal' | 'warning' | 'danger') based on credit usage percentage.
+ * Thresholds:
+ *   - percentage >= 100 : danger
+ *   - percentage >= 80  : warning
+ *   - percentage < 80   : normal
+ */
+function getUsageStatus(percentage) {
+  if (percentage >= 100) {
+    return 'danger'
+  }
+
+  if (percentage >= 80) {
+    return 'warning'
+  }
+
+  return 'normal'
+}
+
+/**
+ * Safely rounds floating point numbers to avoid IEEE-754 precision artifacts.
+ */
+function roundFloat(num, decimals = 10) {
+  if (!Number.isFinite(num)) return 0
+  const factor = 10 ** decimals
+  return Math.round(num * factor) / factor
+}
+
+/**
  * Computes credit usage metrics: percentage, clamping, status, and remaining credits.
  */
 function computeUsage(rawUsed, rawBudget) {
@@ -59,7 +87,7 @@ function computeUsage(rawUsed, rawBudget) {
   let percentage = 0
   if (hasBudget) {
     const rawPct = (used / budget) * 100
-    percentage = Number.isFinite(rawPct) ? Math.round(rawPct) : 0
+    percentage = Number.isFinite(rawPct) ? roundFloat(rawPct, 10) : 0
   }
 
   // Clamped between 0% and 100% for the visual progress bar and aria-valuenow
@@ -69,17 +97,11 @@ function computeUsage(rawUsed, rawBudget) {
   // Usage < 80%: Normal
   // Usage >= 80% and < 100%: Warning
   // Usage >= 100%: Danger
-  let status = 'normal'
-  if (percentage >= 100) {
-    status = 'danger'
-  } else if (percentage >= 80) {
-    status = 'warning'
-  } else {
-    status = 'normal'
-  }
+  const status = getUsageStatus(percentage)
 
   // Remaining credits: 0 if no budget or if usage exceeds budget
-  const remaining = hasBudget ? Math.max(0, budget - used) : 0
+  const rawRemaining = hasBudget ? Math.max(0, budget - used) : 0
+  const remaining = roundFloat(rawRemaining, 10)
 
   return {
     used,
@@ -117,7 +139,11 @@ export function CreditProgressWidget({
 
   const accessibleValueText = hasBudget
     ? `${percentage}% (${safeUsed} of ${safeBudget} credits used, ${remaining} remaining)${
-        percentage >= 100 ? ' - Danger: Budget exceeded' : percentage >= 80 ? ' - Warning: High usage' : ''
+        status === 'danger'
+          ? ' - Danger: Budget exceeded'
+          : status === 'warning'
+            ? ' - Warning: High usage'
+            : ''
       }`
     : 'No budget configured'
 
@@ -254,7 +280,7 @@ export function CreditProgressWidget({
               </strong>{' '}
               credits
             </span>
-            {percentage >= 100 && (
+            {status === 'danger' && (
               <span style={{ color: 'var(--color-danger, #dc2626)', fontWeight: 600 }}>
                 Budget exceeded
               </span>
