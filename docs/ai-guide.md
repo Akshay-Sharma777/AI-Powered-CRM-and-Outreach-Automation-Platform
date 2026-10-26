@@ -118,6 +118,8 @@ The prompt requires a JSON object containing six fields:
 
 The output must conform to `contracts/ai-schemas/draft_output.json`. The schema prohibits additional properties and requires all six fields.
 
+**Email body word count:** The prompt requires the generated email body to contain 80–200 words. The JSON schema describes this requirement but does not enforce a minimum or maximum word count. A separate word-count validation check is needed to enforce this limit; runtime enforcement has not been confirmed.
+
 #### Safe Modification Procedures
 
 1. Preserve the existing input variable names and their intended meanings.
@@ -133,23 +135,23 @@ The output must conform to `contracts/ai-schemas/draft_output.json`. The schema 
 
 #### Versioning and Loading
 
-The prompt loader in `ai/prompts/__init__.py` defines `CURRENT_PROMPT_VERSION = "1.0.0"` and uses the filename pattern `{name}_{version}.md`. Its `load_prompt()` function defaults to the version suffix `v1`, which resolves `load_prompt("email_draft")` to `email_draft_v1.md`.
+The prompt loader is defined in `ai/prompts/__init__.py`. It declares `CURRENT_PROMPT_VERSION = "1.0.0"`, which records the current release version.
 
-The changelog records `1.0.0` as the initial release of this template. The semantic version (`1.0.0`) and filename suffix (`v1`) are distinct representations. The loader does not directly use `CURRENT_PROMPT_VERSION` to select the prompt file in the inspected implementation. Other application usage must be checked before confirming how the active version is selected throughout the project.
+The `load_prompt(name, version="v1")` function selects a prompt file using the pattern `{name}_{version}.md`. For example, `load_prompt("email_draft")` loads `ai/prompts/email_draft_v1.md` because the default filename suffix is `v1`.
 
-Whenever a new version is introduced, check the recorded version against the loader configuration, changelog, and actual prompt files. Ensure the version documented in this guide reflects the repository's implementation.
+The loader uses the `version` argument to select the file. It does not automatically convert `1.0.0` into `v1` or use `CURRENT_PROMPT_VERSION` to choose the filename.
+
+When adding a new prompt version, check that the filename, loader argument, changelog, and documented release version are consistent. If a requested prompt file does not exist, `load_prompt()` raises `FileNotFoundError`.
 
 ### 6.2 Prompt Inventory and Scope
 
-The inspected `ai/prompts/` directory contains one prompt template: `email_draft_v1.md`.
+The `ai/prompts/` directory currently contains one available prompt template: `email_draft_v1.md`. The `tone_hr.md`, `tone_tpo.md`, and `tone_founder.md` files mentioned in the earlier directory overview are not present in the inspected branch.
 
 The other visible files serve supporting purposes:
 
 - `__init__.py` — prompt loading and version configuration.
 - `CHANGELOG.md` — prompt version history.
 - `.gitkeep` — directory placeholder used by Git; it is not a prompt template.
-
-The older directory overview mentions `tone_hr.md`, `tone_tpo.md`, and `tone_founder.md`, but these files were not present in the inspected directory. This catalog therefore documents the prompt template currently visible in the repository.
 
 Re-inspect `ai/prompts/` whenever new prompt templates are added. Each new template should be documented with its exact filename, active version, purpose, input variables, output schema, and safe modification procedures based on its actual contents and implementation.
 
