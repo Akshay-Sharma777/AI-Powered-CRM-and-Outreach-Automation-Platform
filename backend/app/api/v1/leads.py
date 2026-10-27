@@ -96,7 +96,6 @@ SAMPLE_LEADS = [
 ]
 
 
-
 @router.get("", response_model=PaginatedLeadsResponse)
 def list_leads(
     page: int = Query(default=1, ge=1),
@@ -112,13 +111,13 @@ def list_leads(
     assigned_to: Optional[str] = None,
     search: Optional[str] = None,
     sort_by: Literal[
-    "discovered_at",
-    "score",
-    "experience_min",
-    "experience_max",
-    "organization_name",
-    "title",
-] = "discovered_at",
+        "discovered_at",
+        "score",
+        "experience_min",
+        "experience_max",
+        "organization_name",
+        "title",
+    ] = "discovered_at",
     sort_order: Literal["asc", "desc"] = "desc",
     current_user: dict = Depends(get_current_user),
 ):
@@ -177,6 +176,7 @@ def get_lead_by_id(
         )
 
     return lead
+
 
 @router.post("/{id}/claim")
 def claim_lead(id: str, current_user: dict = Depends(get_current_user)):
