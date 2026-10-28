@@ -1,31 +1,36 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useMemo } from 'react'
 import { LeadTable } from './LeadTable'
-import { Input, Select } from '../../components/ui/Input'
+import { LeadFilters } from './LeadFilters'
+import {
+  createDefaultFilters,
+  readFiltersFromUrl,
+} from '../../store/filters'
 import { Button } from '../../components/ui/Button'
+import { MOCK_LEADS } from '../../mocks/sampleLeads'
 
 /**
  * Lead Pipeline page.
  * FE-09: table now fetches/pages/sorts itself via the server-side API.
- * The search + score-band controls below are TEMPORARY and are replaced by FE-10;
- * the preview panel is a placeholder and is replaced by the FE-11 drawer.
+ * FE-10: filters and search controls with URL parameter synchronization.
+ * FE-11: preview panel is a placeholder and will be replaced by the drawer.
  */
 export default function LeadPipelinePage({ currentUser }) {
-  const [search, setSearch] = useState('')
-  const [debouncedSearch, setDebouncedSearch] = useState('')
-  const [scoreBand, setScoreBand] = useState('all')
+  const [filters, setFilters] = useState(() => readFiltersFromUrl())
   const [selectedLeadId, setSelectedLeadId] = useState(null)
   const [refreshKey, setRefreshKey] = useState(0)
 
-  // Avoid firing a request on every keystroke.
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(search.trim()), 300)
-    return () => clearTimeout(timer)
-  }, [search])
-
-  const filters = {
-    search: debouncedSearch,
-    score_band: scoreBand === 'all' ? '' : scoreBand,
-  }
+  const tableFilters = useMemo(() => {
+    return {
+      search: filters.search || '',
+      score_band: filters.scoreBand === 'all' ? '' : filters.scoreBand,
+      status: filters.status === 'all' ? '' : filters.status,
+      assigned_to: filters.assignedTo === 'all' ? '' : filters.assignedTo,
+      source: filters.sources?.length === 1 ? filters.sources[0] : (filters.sources?.length > 1 ? filters.sources.join(',') : ''),
+      experience_min: filters.experienceMin,
+      experience_max: filters.experienceMax,
+      ...filters,
+    }
+  }, [filters])
 
   return (
     <div
@@ -58,42 +63,19 @@ export default function LeadPipelinePage({ currentUser }) {
         </Button>
       </div>
 
-      {/* Temporary filter bar (replaced by FE-10) */}
-      <div
-        style={{
-          display: 'flex',
-          gap: '12px',
-          backgroundColor: 'var(--color-bg-surface)',
-          padding: '16px',
-          borderRadius: 'var(--radius-md)',
-          border: '1px solid var(--color-border)',
-          flexWrap: 'wrap',
+      {/* Filter Bar (FE-10) */}
+      <LeadFilters
+        leads={MOCK_LEADS}
+        filters={filters}
+        onFiltersChange={setFilters}
+        onClear={() => {
+          const defaults = createDefaultFilters()
+          setFilters(defaults)
         }}
-      >
-        <div style={{ flex: 1, minWidth: '240px' }}>
-          <Input
-            placeholder="Search company or job title..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-        <div style={{ width: '180px' }}>
-          <Select
-            value={scoreBand}
-            onChange={(e) => setScoreBand(e.target.value)}
-            options={[
-              { value: 'all', label: 'All Score Bands' },
-              { value: 'high', label: 'High (80+ Eligible)' },
-              { value: 'medium', label: 'Medium (60-79)' },
-              { value: 'low', label: 'Low (< 60)' },
-              { value: 'suppressed', label: 'Suppressed' },
-            ]}
-          />
-        </div>
-      </div>
+      />
 
       <LeadTable
-        filters={filters}
+        filters={tableFilters}
         currentUserId={currentUser?.id}
         selectedId={selectedLeadId}
         refreshKey={refreshKey}
@@ -128,3 +110,4 @@ export default function LeadPipelinePage({ currentUser }) {
     </div>
   )
 }
+
