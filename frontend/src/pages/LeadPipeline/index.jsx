@@ -16,7 +16,6 @@ import { MOCK_LEADS } from '../../mocks/sampleLeads'
  */
 export default function LeadPipelinePage({ currentUser }) {
   const [filters, setFilters] = useState(() => readFiltersFromUrl())
-  const [appliedSearch, setAppliedSearch] = useState(() => filters.search)
   const [selectedLeadId, setSelectedLeadId] = useState(null)
   const [refreshKey, setRefreshKey] = useState(0)
 
@@ -69,11 +68,9 @@ export default function LeadPipelinePage({ currentUser }) {
         leads={MOCK_LEADS}
         filters={filters}
         onFiltersChange={setFilters}
-        onSearchChange={setAppliedSearch}
         onClear={() => {
           const defaults = createDefaultFilters()
           setFilters(defaults)
-          setAppliedSearch('')
         }}
       />
 

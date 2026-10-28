@@ -1,6 +1,6 @@
 import React from 'react'
 import { renderToString } from 'react-dom/server'
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import {
   DEFAULT_FILTERS,
   createDefaultFilters,
@@ -57,9 +57,9 @@ describe('FE-10 LeadFilters and Store', () => {
 
     it('writes non-default filters to the browser history state', () => {
       const replaceStateMock = vi.fn()
-      const originalWindow = global.window
+      const originalWindow = globalThis.window
 
-      global.window = {
+      globalThis.window = {
         location: {
           pathname: '/pipeline',
           hash: '',
@@ -89,7 +89,7 @@ describe('FE-10 LeadFilters and Store', () => {
       expect(nextUrl).toContain('status=new')
       expect(nextUrl).toContain('assignedTo=user-7')
 
-      global.window = originalWindow
+      globalThis.window = originalWindow
     })
   })
 
