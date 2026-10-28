@@ -2,9 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { LeadTable } from './LeadTable'
 import { Input, Select } from '../../components/ui/Input'
 import { Button } from '../../components/ui/Button'
-import { Spinner, EmptyState, ErrorBanner } from '../../components/feedback/Spinner'
-import { apiClient } from '../../api/client'
-import { MOCK_LEADS } from '../../mocks/sampleLeads'
 import LeadDetailDrawer from './LeadDetailDrawer'
 
 
