@@ -16,7 +16,9 @@ export function createDefaultFilters() {
   }
 }
 
-export function readFiltersFromUrl(search = window.location.search) {
+export function readFiltersFromUrl(
+  search = typeof window !== 'undefined' ? window.location?.search : ''
+) {
   const params = new URLSearchParams(search)
   const defaults = createDefaultFilters()
 
@@ -39,6 +41,7 @@ export function readFiltersFromUrl(search = window.location.search) {
 }
 
 export function writeFiltersToUrl(filters) {
+  if (typeof window === 'undefined') return
   const params = new URLSearchParams()
 
   if (filters.search.trim()) params.set('search', filters.search.trim())
