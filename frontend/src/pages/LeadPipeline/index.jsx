@@ -6,17 +6,11 @@ import {
   readFiltersFromUrl,
 } from '../../store/filters'
 import { Button } from '../../components/ui/Button'
-import { MOCK_LEADS } from '../../mocks/sampleLeads'
+import LeadDetailDrawer from './LeadDetailDrawer'
 
-/**
- * Lead Pipeline page.
- * FE-09: table now fetches/pages/sorts itself via the server-side API.
- * FE-10: filters and search controls with URL parameter synchronization.
- * FE-11: preview panel is a placeholder and will be replaced by the drawer.
- */
 export default function LeadPipelinePage({ currentUser }) {
   const [filters, setFilters] = useState(() => readFiltersFromUrl())
-  const [selectedLeadId, setSelectedLeadId] = useState(null)
+  const [selectedLead, setSelectedLead] = useState(null)
   const [refreshKey, setRefreshKey] = useState(0)
 
   const tableFilters = useMemo(() => {
@@ -65,7 +59,7 @@ export default function LeadPipelinePage({ currentUser }) {
 
       {/* Filter Bar (FE-10) */}
       <LeadFilters
-        leads={MOCK_LEADS}
+        leads={[]}
         filters={filters}
         onFiltersChange={setFilters}
         onClear={() => {
@@ -77,37 +71,16 @@ export default function LeadPipelinePage({ currentUser }) {
       <LeadTable
         filters={tableFilters}
         currentUserId={currentUser?.id}
-        selectedId={selectedLeadId}
+        selectedId={selectedLead?.id}
         refreshKey={refreshKey}
-        onSelect={(leadId) => setSelectedLeadId(leadId)}
+        onSelect={(lead) => setSelectedLead(lead)}
       />
 
-      {/* Placeholder until the FE-11 Lead Detail Drawer exists */}
-      {selectedLeadId && (
-        <div
-          style={{
-            backgroundColor: 'var(--color-bg-surface)',
-            padding: '20px',
-            borderRadius: 'var(--radius-md)',
-            border: '1px solid var(--color-border)',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <div style={{ fontSize: '14px' }}>
-            Lead selected: <code>{selectedLeadId}</code> — detail drawer arrives in FE-11.
-          </div>
-          <button
-            onClick={() => setSelectedLeadId(null)}
-            aria-label="Close preview"
-            style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-          >
-            ✕
-          </button>
-        </div>
-      )}
+      <LeadDetailDrawer
+        lead={selectedLead}
+        isOpen={!!selectedLead}
+        onClose={() => setSelectedLead(null)}
+      />
     </div>
   )
 }
-
