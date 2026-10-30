@@ -7,6 +7,7 @@ import {
 } from '../../store/filters'
 import { Button } from '../../components/ui/Button'
 import LeadDetailDrawer from './LeadDetailDrawer'
+import { MOCK_LEADS } from '../../mocks/sampleLeads'
 
 export default function LeadPipelinePage({ currentUser }) {
   const [filters, setFilters] = useState(() => readFiltersFromUrl())
@@ -59,7 +60,7 @@ export default function LeadPipelinePage({ currentUser }) {
 
       {/* Filter Bar (FE-10) */}
       <LeadFilters
-        leads={[]}
+        leads={MOCK_LEADS}
         filters={filters}
         onFiltersChange={setFilters}
         onClear={() => {
@@ -71,9 +72,9 @@ export default function LeadPipelinePage({ currentUser }) {
       <LeadTable
         filters={tableFilters}
         currentUserId={currentUser?.id}
-        selectedId={selectedLead?.id}
+        selectedId={typeof selectedLead === 'object' ? selectedLead?.id : selectedLead}
         refreshKey={refreshKey}
-        onSelect={(lead) => setSelectedLead(lead)}
+        onSelect={(leadId, leadObj) => setSelectedLead(leadObj || leadId)}
       />
 
       <LeadDetailDrawer
