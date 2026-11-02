@@ -5,6 +5,7 @@ import { Header } from './components/layout/Header'
 import LoginPage from './pages/Login/index'
 import LeadPipelinePage from './pages/LeadPipeline/index'
 import KitchenSinkPage from './pages/_Kitchen/index'
+import History from './pages/EnrichmentQueue/History'
 
 function PlaceholderPage({ title, description, roleRequirement }) {
   return (
@@ -106,19 +107,15 @@ export default function App() {
             }
           />
           <Route
-            path="/enrichment"
-            element={
-              currentUser ? (
-                <PlaceholderPage
-                  title="Contact Enrichment Queue (FE-16)"
-                  description="Manual credit-governed recruiter lookups using ContactOut and Snov.io."
-                  roleRequirement="researcher, admin"
-                />
-              ) : (
-                <Navigate to="/login" replace />
-              )
-            }
-          />
+  path="/enrichment"
+  element={
+    currentUser ? (
+      <History />
+    ) : (
+      <Navigate to="/login" replace />
+    )
+  }
+/>
           <Route
             path="/campaigns"
             element={
