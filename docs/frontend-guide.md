@@ -88,3 +88,14 @@ Colors, score bands, and radii are defined in `src/styles/tokens.css`:
 3. Do not modify `package.json` — if you need a library, open a **Library Request** issue.
 4. Always test keyboard accessibility (tab focus, Escape key to close modals).
 5. Attach a screenshot or video recording to your Pull Request!
+
+---
+
+## 6. Completed Task Notes
+
+### FE-17: Enrich Confirm Modal with Credit Guard
+- **File**: `src/pages/EnrichmentQueue/EnrichConfirmModal.jsx` (tests in `EnrichConfirmModal.test.jsx`).
+- Shows the selected provider (ContactOut / Snov.io), number of selected records, estimated credit cost, and remaining daily and monthly credits before any enrichment starts.
+- The **Confirm & Deduct Credits** button is disabled, with a clear `role="alert"` reason, when the estimated cost exceeds the remaining daily or monthly budget, when no records are selected, or when the provider is unsupported. The same guard is repeated inside the click handler.
+- The component makes no API calls itself. The parent should start enrichment only from `onConfirm`; Escape, the X button, the backdrop and Cancel only call `onClose`.
+- Props: `isOpen`, `onClose`, `onConfirm`, `provider`, `selectedRecords` or `selectedCount`, `estimatedCredits`, `remainingDailyCredits`, `remainingMonthlyCredits`.
