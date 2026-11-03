@@ -172,6 +172,9 @@ Reviewing the available information helps Researchers understand which lead reco
 ![alt text](<Enrichment Queue-resear.png>)
 
 ### 7.5 Researcher UI Kitchen Sink
+The UI Kitchen Sink page displays different user interface components used in the application.
+
+Researchers can view buttons, forms, labels, and other interface elements to become familiar with the application's design.
 ![alt text](<UI Kitchen-resear.png>)
 
 ### 7.6 Campaign Manager Role
@@ -241,3 +244,37 @@ The UI Kitchen Sink page displays the different user interface components used i
 
 Developers can use this page to view and understand the appearance of buttons, forms, labels, and other interface elements. It is useful for checking UI consistency and becoming familiar with the components used across the frontend.
 ![alt text](<4,UI Kitchen Sink-Dev.png>)
+
+
+## 9. Discovery-to-Outreach Workflow
+
+This section explains the basic steps involved in finding leads and managing outreach activities in the AI CRM application.
+
+### Step 1: Login
+Open the application and log in using your assigned role and credentials.
+
+### Step 2: Discover Leads
+Open the Lead Pipeline page to view available leads and job opportunities.
+
+### Step 3: Search and Filter Leads
+Use the search box and available filters to find relevant leads. Check details such as score, contact status, source, and experience.
+
+### Step 4: Review Lead Information
+Open the available lead information and review the details before proceeding.
+
+### Step 5: Assign or Claim Leads
+Use the Assign or Claim options to manage leads.
+
+### Step 6: Enrich Lead Information
+Open the Enrichment Queue to review leads that need additional information or verification.
+
+### Step 7: Manage Outreach Campaigns
+Open Campaign Manager to view and manage available outreach campaigns.
+
+### Step 8: Check the Suppression List
+Review the Suppression List to ensure that excluded contacts are not included in outreach activities.
+
+### Step 9: Monitor Activities
+Use the available dashboard information to review lead and campaign activities.
+
+**Note:** The available pages and actions depend on the user's assigned role and permissions.
