@@ -130,7 +130,6 @@ The script is covered by a self-test that needs no database: it puts a fake `pg_
 - **Permissions:** backup folders are `700`, backup files are `600`, and a folder the script creates is `700`.
 - **Failures:** `pg_dump` failing at once, `pg_dump` failing half-way, compression failing, compression producing a corrupt archive, a missing `DATABASE_URL`, a malformed `DATABASE_URL` and `DAILY_KEEP=0` all make the script exit with an error, print `Backup FAILED`, keep no new or partial file, and delete nothing.
 
-Run it with `bash backup_selftest.sh infra/backup/backup.sh`. The process-list and permission checks need Linux, macOS or WSL, because Windows does not keep Unix permissions. On Git Bash they are skipped and reported as `SKIP`.
 
 ## 7. Troubleshooting
 
