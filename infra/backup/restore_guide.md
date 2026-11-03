@@ -110,6 +110,11 @@ How the connection string is protected:
    ```
    The restore is verified when `diff` prints nothing and the last line says `MATCH`. Check that `source_snapshot.txt` lists your tables, because two empty snapshots would also match. With the sample database it must list `public.campaigns` (1 row) and `public.leads` (3 rows).
 6. **Clean up:**
+Run it from the repository root (Git Bash, WSL, Linux or macOS):
+
+    bash infra/backup/backup_selftest.sh
+
+ It ends with a `Passed / Failed / Skipped` line and exits non-zero if anything failed. The file mode checks are skipped on filesystems that ignore `chmod` (for example a Windows drive under Git Bash), so run it in WSL or Linux to cover them.
    ```bash
    dropdb crm_restore_test
    rm -f source_snapshot.txt restored_snapshot.txt
@@ -117,19 +122,36 @@ How the connection string is protected:
 
 Not compared: sequence positions, indexes and permissions. Run `psql -d crm_restore_test -c "\d <table>"` if you need to inspect a table's indexes and defaults.
 
+
+
+
+
 ## 5. Restoring after a real incident
 
 Do not restore on top of the live database. Restore into a **new** empty database (or a new Neon branch), run the checks in section 4, then point the application's `DATABASE_URL` at it in the deployment environment (never in Git) and tell the team.
 
+
 ## 6. Checking the backup script itself
 
-The script is covered by a self-test that needs no database: it puts a fake `pg_dump` first on the PATH and runs `backup.sh` many times. It checks:
+The script is covered by a self-test that needs no database: it puts a fake `pg_dump` (and, for the compression failures, a fake `gzip`) first on the PATH and runs `backup.sh` many times. It checks:
 
 - **Retention:** 10 old daily and 6 old weekly backups plus one new run on a Sunday end at exactly 7 daily and 4 weekly. A mid-week run adds no weekly copy.
 - **Credentials:** a fake password (with `:`, `@` and `/` in it) is absent from the process list and from the script output. `pg_dump` receives no `DATABASE_URL`, no `PGPASSWORD` and no connection details on its command line. The temporary password file contains the correctly decoded and escaped password, has mode `600`, and is deleted afterwards.
 - **Permissions:** backup folders are `700`, backup files are `600`, and a folder the script creates is `700`.
 - **Failures:** `pg_dump` failing at once, `pg_dump` failing half-way, compression failing, compression producing a corrupt archive, a missing `DATABASE_URL`, a malformed `DATABASE_URL` and `DAILY_KEEP=0` all make the script exit with an error, print `Backup FAILED`, keep no new or partial file, and delete nothing.
 
+<<<<<<< HEAD
+=======
+Run it from the repository root (Git Bash, WSL, Linux or macOS):
+
+```bash
+bash infra/backup/backup_selftest.sh
+```
+
+It ends with a `Passed / Failed / Skipped` line and exits non-zero if anything failed. The file mode checks (password file `600`, folders `700`, backups `600`) need a filesystem that keeps Unix permissions, so on a Windows drive under Git Bash they are reported as `SKIP`. Run it in WSL or Linux to cover them. The process-list check is only a weak check on Git Bash, because its `ps` does not show full command lines.
+
+
+>>>>>>> 4128110 (BE-57: add backup self-test and document how to run it)
 
 ## 7. Troubleshooting
 
