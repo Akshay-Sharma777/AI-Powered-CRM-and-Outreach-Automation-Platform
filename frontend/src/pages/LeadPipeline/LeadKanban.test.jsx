@@ -1,4 +1,3 @@
-
 /* @vitest-environment jsdom */
 
 import React from 'react'
@@ -147,6 +146,39 @@ describe('FE-12 LeadKanban', () => {
     })
 
     expect(leadCard.getAttribute('aria-pressed')).toBe('true')
+  })
+
+  it('updates and persists active filters when filter properties change', async () => {
+    const { rerender } = render(<LeadKanban filters={{ search: 'InitialSearch' }} />)
+
+    expect(await screen.findByText('Google')).toBeTruthy()
+    expect(listLeadsMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        filters: { search: 'InitialSearch' },
+      })
+    )
+
+    rerender(
+      <LeadKanban
+        filters={{
+          search: 'UpdatedSearch',
+          score_band: 'high',
+          status: 'new',
+        }}
+      />
+    )
+
+    await waitFor(() => {
+      expect(listLeadsMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          filters: {
+            search: 'UpdatedSearch',
+            score_band: 'high',
+            status: 'new',
+          },
+        })
+      )
+    })
   })
 
   it('loads additional pages when the API returns multiple pages', async () => {

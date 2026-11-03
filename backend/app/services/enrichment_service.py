@@ -1,4 +1,3 @@
-
 from backend.app.core.config import get_settings
 from backend.app.core.db import get_conn
 
@@ -103,7 +102,7 @@ def validate_credit_confirmation(
     ):
         raise ValueError("Invalid confirmed credits")
 
-    if confirmed_credits != estimated_credits:
+    if estimated_credits is not None and confirmed_credits != estimated_credits:
         raise ValueError("Credit confirmation mismatch")
 
     settings = get_settings()
@@ -159,8 +158,7 @@ def save_enriched_contact(cur, lead_id, contact, provider):
 
 
 def enrich_lead(lead_id, lead, provider, confirmed_credits):
-    estimate = get_provider_estimate(lead, provider)
-    estimated_credits = estimate["estimated_credits"]
+    validate_provider(provider)
 
     if confirmed_credits is None:
         raise ValueError("Credit confirmation is required")
@@ -172,18 +170,24 @@ def enrich_lead(lead_id, lead, provider, confirmed_credits):
     ):
         raise ValueError("Invalid confirmed credits")
 
-    if confirmed_credits != estimated_credits:
-        raise ValueError("Credit confirmation mismatch")
-
     with get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute("SELECT pg_advisory_xact_lock(390039)")
 
+            monthly_used = get_monthly_credits_used(cur)
             validation = validate_credit_confirmation(
-                estimated_credits,
+                None,
                 confirmed_credits,
-                get_monthly_credits_used(cur)
+                monthly_used=monthly_used
             )
+
+            estimate = get_provider_estimate(lead, provider)
+            estimated_credits = estimate["estimated_credits"]
+
+            if confirmed_credits != estimated_credits:
+                raise ValueError("Credit confirmation mismatch")
+
+            validation["estimated_credits"] = estimated_credits
 
             request_id = save_enrichment_request(
                 cur,
