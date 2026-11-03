@@ -10,7 +10,10 @@ def mock_contactout_lookup(lead):
     return {
         "provider": "contactout",
         "estimated_credits": 1,
-        "contact": None
+        "contact": {
+            "email": "jane@example.com",
+            "phone": "9876543210"
+        }
     }
 
 
@@ -18,7 +21,10 @@ def mock_snov_lookup(lead):
     return {
         "provider": "snov",
         "estimated_credits": 1,
-        "contact": None
+        "contact": {
+            "email": "john@example.com",
+            "phone": "9876543211"
+        }
     }
 
 
