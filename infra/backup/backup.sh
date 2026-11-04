@@ -130,6 +130,7 @@ fi
 unset DB_PASS
 
 # ---- Backup ------------------------------------------------------------------
+[ -d "${BACKUP_DIR}" ] || { mkdir -p "${BACKUP_DIR}" && chmod 700 "${BACKUP_DIR}"; }
 
 mkdir -p "${DAILY_DIR}" "${WEEKLY_DIR}"
 chmod 700 "${DAILY_DIR}" "${WEEKLY_DIR}"
