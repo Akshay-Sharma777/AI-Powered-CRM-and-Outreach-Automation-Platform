@@ -6,6 +6,7 @@ import LoginPage from './pages/Login/index'
 import LeadPipelinePage from './pages/LeadPipeline/index'
 import EnrichmentQueuePage from './pages/EnrichmentQueue/index'
 import KitchenSinkPage from './pages/_Kitchen/index'
+import History from './pages/EnrichmentQueue/History'
 
 function PlaceholderPage({ title, description, roleRequirement }) {
   return (

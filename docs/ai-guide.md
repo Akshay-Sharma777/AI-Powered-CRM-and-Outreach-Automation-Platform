@@ -282,3 +282,42 @@ parse_experience("2-4 years of experience")
 
 Tests: `pytest ai/evals/test_experience_parser.py` (40 rules-only phrases plus mock-client AI tests).
 
+
+---
+
+## 8. Fuzzy Company Name Matcher (AI-07)
+
+File: `ai/extraction/company_matcher.py`
+
+`calculate_similarity(company_a, company_b)` returns `SimilarityResult(score, explanation)`. The score is between 0.0 and 1.0.
+
+- **Normalisation:** lowercase, punctuation and accents ignored, `&` handled, legal suffixes (`Pvt Ltd`, `Inc`, `LLC`) removed.
+- **Abbreviation match:** `TCS` matches `Tata Consultancy Services`.
+- **Token overlap:** shared words, with tolerance for small typos. Generic words such as `Technologies` count less.
+- **Look-alike guard:** names that share a root but have different distinguishing words (`Acme Healthcare` vs `Acme Logistics`) score low.
+- **Known limitation:** the abbreviation match is a heuristic. Unrelated companies whose initials happen to match can be proposed, so every candidate must be reviewed by a human.
+- `is_possible_duplicate(a, b)` returns True at 0.75 or above. It only proposes candidates; it never merges records. A human decides.
+
+---
+
+## 9. Token Usage & Hash Cache (AI-20)
+
+File: `ai/usage.py`
+
+- **`UsageTracker`** records prompt and completion token counts and estimated USD cost for model calls, and provides running totals through `summary()`.
+- **`HashCache`** is a thread-safe, in-memory LRU cache. It uses a SHA-256 digest of the canonicalized prompt input; the cache key also includes the schema, temperature, and model so requests with different settings do not share entries.
+- **`CachedGeminiClient`** wraps `GeminiClient` while retaining the `generate(prompt, schema, temperature)` interface. Repeated matching requests return a deep-copied cached output and report zero additional tokens and cost.
+- Failed model calls are not cached or recorded as successful usage.
+- Cost values are estimates. The default Gemini Flash prices are placeholders; configure `GEMINI_INPUT_COST_PER_1M_TOKENS` and `GEMINI_OUTPUT_COST_PER_1M_TOKENS` after checking the current pricing for the selected model.
+- Cache entries and usage totals are held in process memory and are cleared when the process restarts. This module does not access the database.
+
+```python
+from ai.usage import CachedGeminiClient
+
+client = CachedGeminiClient()
+output, usage = client.generate("Generate outreach draft")  # model call
+output, usage = client.generate("Generate outreach draft")  # cache hit; zero new tokens
+summary = client.usage_summary()
+```
+
+Tests: `GEMINI_MOCK_MODE=true pytest -v ai/evals/test_usage.py` (17 passed, as reported for this task).
