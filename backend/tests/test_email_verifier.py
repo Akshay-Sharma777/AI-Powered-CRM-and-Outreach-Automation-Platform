@@ -2,7 +2,11 @@ import logging
 
 import pytest
 
-from backend.app.integrations.email_verifier import EmailVerifier, VerificationStatus
+from backend.app.integrations.email_verifier import (
+    EmailVerifier,
+    EmailVerifierClient,
+    VerificationStatus,
+)
 
 
 @pytest.mark.parametrize(
@@ -97,3 +101,14 @@ def test_logs_mask_email_address(caplog, monkeypatch):
 
 def test_invalid_email_input_returns_failed():
     assert EmailVerifier(sandbox=True).verify("") == "failed"
+
+
+def test_email_verifier_client_adapts_normalized_result(monkeypatch):
+    monkeypatch.setattr(EmailVerifier, "verify", lambda self, email: "deliverable")
+
+    result = EmailVerifierClient().verify("person@example.com")
+
+    assert result == {
+        "result": "deliverable",
+        "raw_response": {"normalized_status": "deliverable"},
+    }

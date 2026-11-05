@@ -118,6 +118,16 @@ export default function App() {
             }
           />
           <Route
+            path="/enrichment/history"
+            element={
+              currentUser ? (
+                <History />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
+          <Route
             path="/campaigns"
             element={
               currentUser ? (
@@ -204,4 +214,3 @@ export default function App() {
     </BrowserRouter>
   )
 }
-

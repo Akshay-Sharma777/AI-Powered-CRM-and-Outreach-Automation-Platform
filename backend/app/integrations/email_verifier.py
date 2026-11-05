@@ -8,12 +8,13 @@ from __future__ import annotations
 import json
 import logging
 import os
-import re
 from enum import Enum
 from typing import Any, Mapping
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
+
+from backend.app.core.config import get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -148,3 +149,18 @@ class EmailVerifier:
         if not local or not domain:
             return "***"
         return f"{local[0]}***@{domain}"
+
+
+class EmailVerifierClient:
+    """Adapt the normalized verifier result to the verification service contract."""
+
+    def __init__(self) -> None:
+        settings = get_settings()
+        self._verifier = EmailVerifier(sandbox=settings.EMAIL_VERIFIER_SANDBOX)
+
+    def verify(self, email: str) -> dict[str, Any]:
+        result = self._verifier.verify(email)
+        return {
+            "result": result,
+            "raw_response": {"normalized_status": result},
+        }
