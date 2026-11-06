@@ -6,6 +6,7 @@ import LoginPage from './pages/Login/index'
 import LeadPipelinePage from './pages/LeadPipeline/index'
 import EnrichmentQueuePage from './pages/EnrichmentQueue/index'
 import KitchenSinkPage from './pages/_Kitchen/index'
+import ApprovalPage from './pages/CampaignManager/Approval'
 import History from './pages/EnrichmentQueue/History'
 
 function PlaceholderPage({ title, description, roleRequirement }) {
@@ -14,6 +15,13 @@ function PlaceholderPage({ title, description, roleRequirement }) {
       <div style={{ backgroundColor: 'var(--color-bg-surface)', padding: '32px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)' }}>
         <h2 style={{ fontSize: '20px', fontWeight: 600, marginBottom: '8px' }}>{title}</h2>
         <p style={{ color: 'var(--color-text-muted)', marginBottom: '16px' }}>{description}</p>
+        {title?.includes('Campaign Manager') && (
+          <div style={{ marginBottom: '16px' }}>
+            <a href="/campaigns/approval" style={{ display: 'inline-flex', alignItems: 'center', padding: '8px 16px', backgroundColor: 'var(--color-primary)', color: '#ffffff', borderRadius: 'var(--radius-md)', fontWeight: 600, fontSize: '13px', textDecoration: 'none' }}>
+              Open Campaign Approval Screen (FE-23) &rarr;
+            </a>
+          </div>
+        )}
         {roleRequirement && (
           <div style={{ fontSize: '13px', color: 'var(--color-text-light)' }}>
             Requires role: <code>{roleRequirement}</code>
@@ -122,6 +130,16 @@ export default function App() {
             element={
               currentUser ? (
                 <History />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
+          <Route
+            path="/campaigns/approval"
+            element={
+              (currentUser || import.meta.env.DEV) ? (
+                <ApprovalPage />
               ) : (
                 <Navigate to="/login" replace />
               )
