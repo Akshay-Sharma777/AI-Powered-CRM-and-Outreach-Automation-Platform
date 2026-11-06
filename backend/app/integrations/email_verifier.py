@@ -1,131 +1,166 @@
-﻿
+"""Email verification client backed by Abstract API.
+
+The API key is read only from ABSTRACT_API_KEY in the process environment.
+Sandbox mode never makes a network request.
 """
-Email deliverability verifier integration.
+from __future__ import annotations
 
-Sandbox mode returns an explicit unknown result.
-Hunter API is used when sandbox mode is disabled.
-"""
-
-from typing import Any, Dict
-
-import requests
+import json
+import logging
+import os
+from enum import Enum
+from typing import Any, Mapping
+from urllib.error import HTTPError, URLError
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
 
 from backend.app.core.config import get_settings
 
+logger = logging.getLogger(__name__)
 
-class EmailVerifierClient:
-    """Client wrapper for email deliverability verification."""
 
-    HUNTER_URL = "https://api.hunter.io/v2/email-verifier"
+class VerificationStatus(str, Enum):
+    DELIVERABLE = "deliverable"
+    UNDELIVERABLE = "undeliverable"
+    CATCH_ALL = "catch_all"
+    RISKY = "risky"
+    UNKNOWN = "unknown"
+    FAILED = "failed"
 
-    def __init__(self) -> None:
-        self.settings = get_settings()
 
-    def verify(self, email: str) -> Dict[str, Any]:
-        """Verify an email address using the configured provider."""
+class EmailVerifier:
+    """Verify email addresses and normalize provider responses.
 
-        # Sandbox never contacts an external provider.
-        if self.settings.EMAIL_VERIFIER_SANDBOX:
-            return {
-                "result": "unknown",
-                "raw_response": {
-                    "mode": "sandbox",
-                    "message": "No real email verification was performed.",
-                },
-            }
+    Args:
+        sandbox: If True, return a configured mock status without calling Abstract.
+        sandbox_status: Status returned in sandbox mode when no per-email mock exists.
+        sandbox_responses: Optional mapping of email addresses to mock statuses.
+        timeout: HTTP timeout in seconds for live requests.
+    """
 
-        provider = self.settings.EMAIL_VERIFIER_PROVIDER.lower()
+    API_URL = "https://emailvalidation.abstractapi.com/v1/"
 
-        if provider != "hunter":
-            raise NotImplementedError(
-                f"Email verifier provider '{provider}' is not supported."
-            )
+    def __init__(
+        self,
+        *,
+        sandbox: bool = False,
+        sandbox_status: str = VerificationStatus.UNKNOWN.value,
+        sandbox_responses: Mapping[str, str] | None = None,
+        timeout: float = 8.0,
+    ) -> None:
+        self.sandbox = sandbox
+        self.sandbox_status = self._validate_status(sandbox_status)
+        self.sandbox_responses = {
+            email.lower(): self._validate_status(status)
+            for email, status in (sandbox_responses or {}).items()
+        }
+        self.timeout = timeout
 
-        api_key = self.settings.EMAIL_VERIFIER_API_KEY
+    def verify(self, email: str) -> str:
+        """Return one of the six standardized status strings."""
+        if not isinstance(email, str) or not email.strip():
+            logger.warning("Email verification skipped for %s: invalid input", self._mask_email(str(email)))
+            return VerificationStatus.FAILED.value
 
+        email = email.strip()
+        if self.sandbox:
+            status = self.sandbox_responses.get(email.lower(), self.sandbox_status)
+            logger.info("Sandbox email verification for %s returned %s", self._mask_email(email), status)
+            return status
+
+        api_key = os.environ.get("ABSTRACT_API_KEY")
         if not api_key:
-            raise NotImplementedError(
-                "Hunter API key is not configured."
-            )
+            logger.error("Email verification unavailable for %s: ABSTRACT_API_KEY is not configured",
+                         self._mask_email(email))
+            return VerificationStatus.FAILED.value
 
         try:
-            response = requests.get(
-                self.HUNTER_URL,
-                params={"email": email},
-                headers={"X-API-KEY": api_key},
-                timeout=25,
-            )
+            payload = self._request_provider(email, api_key)
+            status = self._map_provider_response(payload)
+            logger.info("Email verification for %s returned %s", self._mask_email(email), status)
+            return status
+        except (HTTPError, URLError, TimeoutError, OSError, ValueError, json.JSONDecodeError):
+            # Do not log request URLs, API keys, provider bodies, or full email addresses.
+            logger.warning("Email verification request failed for %s", self._mask_email(email))
+            return VerificationStatus.FAILED.value
 
-            if response.status_code == 202:
-                return {
-                    "result": "unknown",
-                    "raw_response": {
-                        "provider": "hunter",
-                        "status": "processing",
-                        "http_status": 202,
-                    },
-                }
+    def _request_provider(self, email: str, api_key: str) -> dict[str, Any]:
+        query = urlencode({"api_key": api_key, "email": email})
+        request = Request(
+            f"{self.API_URL}?{query}",
+            headers={"Accept": "application/json", "User-Agent": "BE-35-email-verifier/1.0"},
+            method="GET",
+        )
+        with urlopen(request, timeout=self.timeout) as response:
+            data = json.loads(response.read().decode("utf-8"))
+        if not isinstance(data, dict):
+            raise ValueError("Provider returned a non-object JSON response")
+        return data
 
-            try:
-                payload = response.json()
-            except ValueError:
-                payload = {
-                    "message": "Invalid JSON response from Hunter."
-                }
+    @classmethod
+    def _map_provider_response(cls, payload: Mapping[str, Any]) -> str:
+        """Normalize both classic and current Abstract response shapes."""
+        deliverability = payload.get("deliverability")
+        if not deliverability:
+            deliverability = (payload.get("email_deliverability") or {}).get("status")
 
-            if response.status_code != 200:
-                return {
-                    "result": "failed",
-                    "raw_response": {
-                        "provider": "hunter",
-                        "http_status": response.status_code,
-                        "response": payload,
-                    },
-                }
+        quality = payload.get("email_quality") or {}
+        catch_all = cls._flag(payload.get("is_catchall_email"))
+        if catch_all is None:
+            catch_all = cls._flag(quality.get("is_catchall"))
 
-            data = payload.get("data", {})
-            hunter_status = data.get("status")
+        # Catch-all takes precedence: the domain accepts mail, but the exact
+        # mailbox cannot be confirmed reliably.
+        if catch_all is True:
+            return VerificationStatus.CATCH_ALL.value
 
-            status_mapping = {
-                "valid": "deliverable",
-                "invalid": "undeliverable",
-                "accept_all": "catch_all",
-                "unknown": "unknown",
-                "webmail": "risky",
-                "disposable": "risky",
-            }
+        normalized = str(deliverability or "").strip().lower()
+        mapping = {
+            "deliverable": VerificationStatus.DELIVERABLE.value,
+            "undeliverable": VerificationStatus.UNDELIVERABLE.value,
+            "risky": VerificationStatus.RISKY.value,
+            "unknown": VerificationStatus.UNKNOWN.value,
+        }
+        return mapping.get(normalized, VerificationStatus.FAILED.value)
 
-            allowed_results = {
-                "deliverable",
-                "undeliverable",
-                "catch_all",
-                "risky",
-                "unknown",
-            }
+    @staticmethod
+    def _flag(value: Any) -> bool | None:
+        """Read Abstract's boolean fields, which may be plain bools or {value: bool}."""
+        if isinstance(value, bool):
+            return value
+        if isinstance(value, Mapping):
+            nested = value.get("value")
+            return nested if isinstance(nested, bool) else None
+        return None
 
-            hunter_result = data.get("result")
+    @staticmethod
+    def _validate_status(status: str) -> str:
+        allowed = {item.value for item in VerificationStatus}
+        if status not in allowed:
+            raise ValueError(f"Invalid verification status: {status!r}")
+        return status
 
-            if hunter_result in allowed_results:
-                result = hunter_result
-            else:
-                result = status_mapping.get(
-                    hunter_status,
-                    "unknown",
-                )
+    @staticmethod
+    def _mask_email(email: str) -> str:
+        """Mask the local part while retaining enough context for debugging."""
+        if "@" not in email:
+            return "***"
+        local, domain = email.rsplit("@", 1)
+        if not local or not domain:
+            return "***"
+        return f"{local[0]}***@{domain}"
 
-            return {
-                "result": result,
-                "raw_response": {
-                    "provider": "hunter",
-                    "response": payload,
-                },
-            }
 
-        except requests.exceptions.RequestException as exc:
-            return {
-                "result": "failed",
-                "raw_response": {
-                    "provider": "hunter",
-                    "error": type(exc).__name__,
-                },
-            }
+class EmailVerifierClient:
+    """Adapt the normalized verifier result to the verification service contract."""
+
+    def __init__(self) -> None:
+        settings = get_settings()
+        self._verifier = EmailVerifier(sandbox=settings.EMAIL_VERIFIER_SANDBOX)
+
+    def verify(self, email: str) -> dict[str, Any]:
+        result = self._verifier.verify(email)
+        return {
+            "result": result,
+            "raw_response": {"normalized_status": result},
+        }

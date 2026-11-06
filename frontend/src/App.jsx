@@ -4,6 +4,7 @@ import { Sidebar } from './components/layout/Sidebar'
 import { Header } from './components/layout/Header'
 import LoginPage from './pages/Login/index'
 import LeadPipelinePage from './pages/LeadPipeline/index'
+import EnrichmentQueuePage from './pages/EnrichmentQueue/index'
 import KitchenSinkPage from './pages/_Kitchen/index'
 import History from './pages/EnrichmentQueue/History'
 
@@ -107,15 +108,25 @@ export default function App() {
             }
           />
           <Route
-  path="/enrichment"
-  element={
-    currentUser ? (
-      <History />
-    ) : (
-      <Navigate to="/login" replace />
-    )
-  }
-/>
+            path="/enrichment"
+            element={
+              currentUser ? (
+                <EnrichmentQueuePage currentUser={currentUser} />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
+          <Route
+            path="/enrichment/history"
+            element={
+              currentUser ? (
+                <History />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
           <Route
             path="/campaigns"
             element={
@@ -203,4 +214,3 @@ export default function App() {
     </BrowserRouter>
   )
 }
-
