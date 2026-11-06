@@ -396,3 +396,11 @@ Colors, score bands, and radii are defined in `src/styles/tokens.css`:
 2. **Missing Upstream Prerequisite FE-22**:
    - Official FE-22 (`DraftEditor.jsx`) is not yet completed in the upstream integration branch.
    - `Approval.jsx` accepts `{ draftId, recipient, subject, body }` via props or router state to facilitate clean plug-and-play integration as soon as official FE-22 is merged.
+## 6. Completed Task Notes
+
+### FE-17: Enrich Confirm Modal with Credit Guard
+- **File**: `src/pages/EnrichmentQueue/EnrichConfirmModal.jsx` (tests in `EnrichConfirmModal.test.jsx`).
+- Shows the selected provider (ContactOut / Snov.io), number of selected records, estimated credit cost, and remaining daily and monthly credits before any enrichment starts.
+- The **Confirm & Deduct Credits** button is disabled, with a clear `role="alert"` reason, when the estimated cost exceeds the remaining daily or monthly budget, when no records are selected, or when the provider is unsupported. The same guard is repeated inside the click handler.
+- The component makes no API calls itself. The parent should start enrichment only from `onConfirm`; Escape, the X button, the backdrop and Cancel only call `onClose`.
+- Props: `isOpen`, `onClose`, `onConfirm`, `provider`, `selectedRecords` or `selectedCount`, `estimatedCredits`, `remainingDailyCredits`, `remainingMonthlyCredits`.
